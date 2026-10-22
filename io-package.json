@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "news": {
+      "0.1.1": {
+        "en": "Settings: own field for the PV power (the table is now for more inverters/strings)",
+        "de": "Einstellungen: eigenes Feld für die PV-Leistung (die Tabelle ist jetzt für weitere Wechselrichter/Strings)"
+      },
       "0.1.0": {
         "en": "First version: energy flow (PV, grid, battery, house, consumers) from any adapter incl. Modbus factor/sign, day values, day chart, surplus signal, page for VIS-2",
         "de": "Erste Version: Energiefluss (PV, Netz, Batterie, Haus, Verbraucher) aus jedem Adapter inkl. Modbus-Faktor/Vorzeichen, Tageswerte, Tageskurve, Überschuss-Signal, Seite für VIS-2"
@@ -56,7 +60,12 @@
     "port": 8101,
     "publicHost": "",
     "accessKey": "",
-    "pv": [],
+    "pvState": "",
+    "pvUnit": "auto",
+    "pvScale": 1,
+    "pvSigned": "",
+    "pvInvert": false,
+    "pvMore": [],
     "gridMode": "single",
     "gridState": "",
     "gridPositive": "import",

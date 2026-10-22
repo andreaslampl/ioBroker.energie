@@ -11,9 +11,79 @@
      "text": "Works with every inverter: pick the data points of any adapter (Modbus, SMA, Fronius, Huawei, KNX, …). Watt or kilowatt is taken from the object; for raw Modbus registers set a factor and the sign. Check the result on the page /check (address in info.url, /flow replaced by /check).",
      "xs": 12
     },
-    "pv": {
+    "pvHeader": {
+     "type": "header",
+     "text": "PV",
+     "size": 4,
+     "newLine": true
+    },
+    "pvState": {
+     "type": "objectId",
+     "label": "PV power (inverter)",
+     "xs": 12,
+     "sm": 5,
+     "newLine": true
+    },
+    "pvUnit": {
+     "type": "select",
+     "label": "Unit",
+     "options": [
+      {
+       "value": "auto",
+       "label": "automatic (W, kW from the object)"
+      },
+      {
+       "value": "W",
+       "label": "W"
+      },
+      {
+       "value": "kW",
+       "label": "kW"
+      }
+     ],
+     "default": "auto",
+     "xs": 12,
+     "sm": 4,
+     "newLine": true
+    },
+    "pvScale": {
+     "type": "number",
+     "label": "Factor",
+     "default": 1,
+     "help": "e.g. 0.1 or 10 (Modbus)",
+     "xs": 6,
+     "sm": 3
+    },
+    "pvSigned": {
+     "type": "select",
+     "label": "Sign",
+     "options": [
+      {
+       "value": "",
+       "label": "normal"
+      },
+      {
+       "value": "16",
+       "label": "signed 16 bit (Modbus)"
+      },
+      {
+       "value": "32",
+       "label": "signed 32 bit (Modbus)"
+      }
+     ],
+     "default": "",
+     "xs": 6,
+     "sm": 5
+    },
+    "pvInvert": {
+     "type": "checkbox",
+     "label": "inverted (PV shows negative)",
+     "xs": 12,
+     "newLine": true
+    },
+    "pvMore": {
      "type": "table",
-     "label": "PV (one row per inverter / string)",
+     "label": "More inverters / strings (optional, add a row with +)",
      "newLine": true,
      "xs": 12,
      "items": [
@@ -495,7 +565,8 @@
        "title": "inverted",
        "width": "6%"
       }
-     ]
+     ],
+     "label": "Consumers (add a row with +)"
     }
    }
   },

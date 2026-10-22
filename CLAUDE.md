@@ -23,6 +23,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
 ## Status
 
 - 0.1.0: built generic; owner's inverter/battery not known yet. Not yet tested on the owner's ioBroker.
+- 0.1.1 field: owner found no place to enter the PV value (the PV table only shows a + button) -> own field
+  `pvState` (+ pvUnit/pvScale/pvSigned/pvInvert), table renamed `pvMore`; old `pv` table still read.
+  jsonConfig validated against ioBroker/json-config schemas/jsonConfig.json (ajv).
 
 ## Conventions
 

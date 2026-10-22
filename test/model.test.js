@@ -18,7 +18,8 @@ test('convert: units, Modbus factor and sign', () => {
 
 test('snapshot: signs, computed house, consumers, missing values', () => {
     const cfg = cleanConfig({
-        pv: [{ name: 'Dach Süd', state: 'pv1' }, { name: 'Garage', state: 'pv2', invert: true }],
+        pvState: 'pv1',
+        pvMore: [{ name: 'Garage', state: 'pv2', invert: true }],
         gridState: 'grid',
         gridPositive: 'export',
         batteryState: 'bat',

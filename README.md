@@ -20,7 +20,7 @@ Die Werte können aus **jedem Adapter** kommen (Modbus, SMA, Fronius, Huawei, Ko
 
 | Reiter | Was |
 |---|---|
-| **PV & Netz** | PV: eine Zeile je Wechselrichter oder String. Netz: ein Datenpunkt mit Vorzeichen (und was „positiv“ bedeutet) oder Bezug und Einspeisung getrennt. |
+| **PV & Netz** | PV: Datenpunkt der PV-Leistung; weitere Wechselrichter/Strings in der Tabelle darunter (Zeile mit **+** hinzufügen). Netz: ein Datenpunkt mit Vorzeichen (und was „positiv“ bedeutet) oder Bezug und Einspeisung getrennt. |
 | **Batterie & Haus** | Batterie-Leistung (+ was „positiv“ bedeutet) und Ladestand – optional. Hausverbrauch optional: leer = der Adapter rechnet ihn aus. |
 | **Verbraucher** | Bis zu 8, z. B. Wallbox, Wärmepumpe, Heizstab – mit Symbol. Sie hängen unter dem Haus. |
 | **Überschuss** | Ein-/Ausschaltschwelle und Verzögerung für `surplus.active`. |
@@ -64,6 +64,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.1.1
+- Einstellungen: eigenes Feld für die PV-Leistung; die Tabelle ist für weitere Wechselrichter/Strings.
 
 ### 0.1.0
 - Erste Version: Energiefluss, Tageswerte, Tageskurve, Überschuss-Signal, Seite für VIS‑2, Werte prüfen.
