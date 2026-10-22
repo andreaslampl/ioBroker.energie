@@ -1,0 +1,127 @@
+{
+  "common": {
+    "name": "energie",
+    "version": "0.1.0",
+    "news": {
+      "0.1.0": {
+        "en": "First version: energy flow (PV, grid, battery, house, consumers) from any adapter incl. Modbus factor/sign, day values, day chart, surplus signal, page for VIS-2",
+        "de": "Erste Version: Energiefluss (PV, Netz, Batterie, Haus, Verbraucher) aus jedem Adapter inkl. Modbus-Faktor/Vorzeichen, Tageswerte, Tageskurve, Überschuss-Signal, Seite für VIS-2"
+      }
+    },
+    "titleLang": {
+      "en": "Energy flow",
+      "de": "Energiefluss"
+    },
+    "desc": {
+      "en": "PV, grid, battery and consumers as animated energy flow with day values and chart - from any inverter, for SmartView and VIS-2",
+      "de": "PV, Netz, Batterie und Verbraucher als animierter Energiefluss mit Tageswerten und Kurve – für jeden Wechselrichter, für SmartView und VIS-2"
+    },
+    "authors": [
+      "andreaslampl"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "energie.png",
+    "extIcon": "https://raw.githubusercontent.com/andreaslampl/ioBroker.energie/main/admin/energie.png",
+    "readme": "https://github.com/andreaslampl/ioBroker.energie/blob/main/README.md",
+    "enabled": true,
+    "type": "energy",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "messagebox": true,
+    "localLinks": {
+      "_default": {
+        "link": "http://%ip%:%port%/flow",
+        "color": "#f5b700"
+      }
+    },
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=5.0.19"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=6.0.0"
+      }
+    ],
+    "tier": 3
+  },
+  "native": {
+    "port": 8101,
+    "publicHost": "",
+    "accessKey": "",
+    "pv": [],
+    "gridMode": "single",
+    "gridState": "",
+    "gridPositive": "import",
+    "gridImport": "",
+    "gridExport": "",
+    "gridUnit": "auto",
+    "gridScale": 1,
+    "gridSigned": "",
+    "batteryState": "",
+    "batteryPositive": "charge",
+    "batteryUnit": "auto",
+    "batteryScale": 1,
+    "batterySigned": "",
+    "batterySoc": "",
+    "batterySocScale": 1,
+    "houseState": "",
+    "houseUnit": "auto",
+    "houseScale": 1,
+    "houseSigned": "",
+    "consumers": [],
+    "surplusOn": 1500,
+    "surplusOff": 300,
+    "surplusDelay": 5,
+    "surplusBattery": false
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "All data points deliver values",
+          "de": "Alle Datenpunkte liefern Werte"
+        },
+        "type": "boolean",
+        "role": "indicator.connected",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.url",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Address of the page",
+          "de": "Adresse der Seite"
+        },
+        "type": "string",
+        "role": "url",
+        "read": true,
+        "write": false
+      },
+      "native": {}
+    }
+  ]
+}

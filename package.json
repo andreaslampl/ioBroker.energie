@@ -1,0 +1,43 @@
+{
+  "name": "iobroker.energie",
+  "version": "0.1.0",
+  "description": "Energy flow for ioBroker: PV, grid, battery, house and consumers from any adapter, with day values, day chart and surplus signal - for SmartView and VIS-2",
+  "author": "andreaslampl",
+  "license": "MIT",
+  "homepage": "https://github.com/andreaslampl/ioBroker.energie",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andreaslampl/ioBroker.energie.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andreaslampl/ioBroker.energie/issues"
+  },
+  "keywords": [
+    "ioBroker",
+    "PV",
+    "Photovoltaik",
+    "Energiefluss",
+    "energy flow",
+    "battery",
+    "Modbus"
+  ],
+  "main": "main.js",
+  "files": [
+    "admin/",
+    "lib/",
+    "www/",
+    "main.js",
+    "io-package.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.2.3"
+  },
+  "scripts": {
+    "test": "node --test --test-timeout=30000 test/*.test.js"
+  }
+}

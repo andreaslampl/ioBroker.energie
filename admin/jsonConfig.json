@@ -1,0 +1,578 @@
+{
+ "i18n": true,
+ "type": "tabs",
+ "items": {
+  "_source": {
+   "type": "panel",
+   "label": "PV & grid",
+   "items": {
+    "pvHelp": {
+     "type": "staticText",
+     "text": "Works with every inverter: pick the data points of any adapter (Modbus, SMA, Fronius, Huawei, KNX, …). Watt or kilowatt is taken from the object; for raw Modbus registers set a factor and the sign. Check the result on the page /check (address in info.url, /flow replaced by /check).",
+     "xs": 12
+    },
+    "pv": {
+     "type": "table",
+     "label": "PV (one row per inverter / string)",
+     "newLine": true,
+     "xs": 12,
+     "items": [
+      {
+       "type": "text",
+       "attr": "name",
+       "title": "Name",
+       "width": "18%"
+      },
+      {
+       "type": "objectId",
+       "attr": "state",
+       "title": "Data point (power)",
+       "width": "30%"
+      },
+      {
+       "type": "select",
+       "attr": "unit",
+       "title": "Unit",
+       "options": [
+        {
+         "value": "auto",
+         "label": "automatic (W, kW from the object)"
+        },
+        {
+         "value": "W",
+         "label": "W"
+        },
+        {
+         "value": "kW",
+         "label": "kW"
+        }
+       ],
+       "default": "auto",
+       "width": "12%"
+      },
+      {
+       "type": "number",
+       "attr": "scale",
+       "title": "Factor",
+       "default": 1,
+       "width": "8%"
+      },
+      {
+       "type": "select",
+       "attr": "signed",
+       "title": "Sign",
+       "options": [
+        {
+         "value": "",
+         "label": "normal"
+        },
+        {
+         "value": "16",
+         "label": "signed 16 bit (Modbus)"
+        },
+        {
+         "value": "32",
+         "label": "signed 32 bit (Modbus)"
+        }
+       ],
+       "default": "",
+       "width": "12%"
+      },
+      {
+       "type": "checkbox",
+       "attr": "invert",
+       "title": "inverted",
+       "width": "6%"
+      }
+     ]
+    },
+    "gridHeader": {
+     "type": "header",
+     "text": "Grid",
+     "size": 4,
+     "newLine": true
+    },
+    "gridMode": {
+     "type": "select",
+     "label": "Grid values",
+     "options": [
+      {
+       "value": "single",
+       "label": "one data point (+/-)"
+      },
+      {
+       "value": "split",
+       "label": "import and export separately"
+      }
+     ],
+     "default": "single",
+     "xs": 12,
+     "sm": 4,
+     "newLine": true
+    },
+    "gridState": {
+     "type": "objectId",
+     "label": "Grid power",
+     "hidden": "data.gridMode === 'split'",
+     "xs": 12,
+     "sm": 5
+    },
+    "gridPositive": {
+     "type": "select",
+     "label": "Positive means",
+     "options": [
+      {
+       "value": "import",
+       "label": "import"
+      },
+      {
+       "value": "export",
+       "label": "export"
+      }
+     ],
+     "default": "import",
+     "hidden": "data.gridMode === 'split'",
+     "xs": 12,
+     "sm": 3
+    },
+    "gridImport": {
+     "type": "objectId",
+     "label": "Grid import",
+     "hidden": "data.gridMode !== 'split'",
+     "xs": 12,
+     "sm": 4
+    },
+    "gridExport": {
+     "type": "objectId",
+     "label": "Grid export",
+     "hidden": "data.gridMode !== 'split'",
+     "xs": 12,
+     "sm": 4
+    },
+    "gridUnit": {
+     "type": "select",
+     "label": "Unit",
+     "options": [
+      {
+       "value": "auto",
+       "label": "automatic (W, kW from the object)"
+      },
+      {
+       "value": "W",
+       "label": "W"
+      },
+      {
+       "value": "kW",
+       "label": "kW"
+      }
+     ],
+     "default": "auto",
+     "xs": 12,
+     "sm": 4,
+     "newLine": true
+    },
+    "gridScale": {
+     "type": "number",
+     "label": "Factor",
+     "default": 1,
+     "help": "e.g. 0.1 or 10 (Modbus)",
+     "xs": 6,
+     "sm": 3
+    },
+    "gridSigned": {
+     "type": "select",
+     "label": "Sign",
+     "options": [
+      {
+       "value": "",
+       "label": "normal"
+      },
+      {
+       "value": "16",
+       "label": "signed 16 bit (Modbus)"
+      },
+      {
+       "value": "32",
+       "label": "signed 32 bit (Modbus)"
+      }
+     ],
+     "default": "",
+     "xs": 6,
+     "sm": 5
+    }
+   }
+  },
+  "_battery": {
+   "type": "panel",
+   "label": "Battery & house",
+   "items": {
+    "batteryHeader": {
+     "type": "header",
+     "text": "Battery (optional)",
+     "size": 4
+    },
+    "batteryState": {
+     "type": "objectId",
+     "label": "Battery power",
+     "xs": 12,
+     "sm": 5,
+     "newLine": true
+    },
+    "batteryPositive": {
+     "type": "select",
+     "label": "Positive means",
+     "options": [
+      {
+       "value": "charge",
+       "label": "charging"
+      },
+      {
+       "value": "discharge",
+       "label": "discharging"
+      }
+     ],
+     "default": "charge",
+     "xs": 12,
+     "sm": 3
+    },
+    "batteryUnit": {
+     "type": "select",
+     "label": "Unit",
+     "options": [
+      {
+       "value": "auto",
+       "label": "automatic (W, kW from the object)"
+      },
+      {
+       "value": "W",
+       "label": "W"
+      },
+      {
+       "value": "kW",
+       "label": "kW"
+      }
+     ],
+     "default": "auto",
+     "xs": 12,
+     "sm": 4,
+     "newLine": true
+    },
+    "batteryScale": {
+     "type": "number",
+     "label": "Factor",
+     "default": 1,
+     "help": "e.g. 0.1 or 10 (Modbus)",
+     "xs": 6,
+     "sm": 3
+    },
+    "batterySigned": {
+     "type": "select",
+     "label": "Sign",
+     "options": [
+      {
+       "value": "",
+       "label": "normal"
+      },
+      {
+       "value": "16",
+       "label": "signed 16 bit (Modbus)"
+      },
+      {
+       "value": "32",
+       "label": "signed 32 bit (Modbus)"
+      }
+     ],
+     "default": "",
+     "xs": 6,
+     "sm": 5
+    },
+    "batterySoc": {
+     "type": "objectId",
+     "label": "Charge level (%)",
+     "xs": 12,
+     "sm": 5,
+     "newLine": true
+    },
+    "batterySocScale": {
+     "type": "number",
+     "label": "Factor charge level",
+     "default": 1,
+     "help": "e.g. 0.1 when 765 means 76.5 %",
+     "xs": 12,
+     "sm": 3
+    },
+    "houseHeader": {
+     "type": "header",
+     "text": "House consumption (optional)",
+     "size": 4,
+     "newLine": true
+    },
+    "houseHelp": {
+     "type": "staticText",
+     "text": "Leave empty: the adapter calculates it (PV + import - export + discharge - charge).",
+     "xs": 12,
+     "newLine": true
+    },
+    "houseState": {
+     "type": "objectId",
+     "label": "House consumption",
+     "xs": 12,
+     "sm": 5,
+     "newLine": true
+    },
+    "houseUnit": {
+     "type": "select",
+     "label": "Unit",
+     "options": [
+      {
+       "value": "auto",
+       "label": "automatic (W, kW from the object)"
+      },
+      {
+       "value": "W",
+       "label": "W"
+      },
+      {
+       "value": "kW",
+       "label": "kW"
+      }
+     ],
+     "default": "auto",
+     "xs": 12,
+     "sm": 4,
+     "newLine": true
+    },
+    "houseScale": {
+     "type": "number",
+     "label": "Factor",
+     "default": 1,
+     "help": "e.g. 0.1 or 10 (Modbus)",
+     "xs": 6,
+     "sm": 3
+    },
+    "houseSigned": {
+     "type": "select",
+     "label": "Sign",
+     "options": [
+      {
+       "value": "",
+       "label": "normal"
+      },
+      {
+       "value": "16",
+       "label": "signed 16 bit (Modbus)"
+      },
+      {
+       "value": "32",
+       "label": "signed 32 bit (Modbus)"
+      }
+     ],
+     "default": "",
+     "xs": 6,
+     "sm": 5
+    }
+   }
+  },
+  "_consumers": {
+   "type": "panel",
+   "label": "Consumers",
+   "items": {
+    "consumersHelp": {
+     "type": "staticText",
+     "text": "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption.",
+     "xs": 12
+    },
+    "consumers": {
+     "type": "table",
+     "newLine": true,
+     "xs": 12,
+     "items": [
+      {
+       "type": "text",
+       "attr": "name",
+       "title": "Name",
+       "width": "18%"
+      },
+      {
+       "type": "objectId",
+       "attr": "state",
+       "title": "Data point (power)",
+       "width": "30%"
+      },
+      {
+       "type": "select",
+       "attr": "icon",
+       "title": "Symbol",
+       "options": [
+        {
+         "value": "car",
+         "label": "Car / wallbox"
+        },
+        {
+         "value": "heatpump",
+         "label": "Heat pump"
+        },
+        {
+         "value": "water",
+         "label": "Hot water / heating rod"
+        },
+        {
+         "value": "heat",
+         "label": "Heating"
+        },
+        {
+         "value": "pool",
+         "label": "Pool"
+        },
+        {
+         "value": "light",
+         "label": "Light"
+        },
+        {
+         "value": "plug",
+         "label": "Socket / device"
+        },
+        {
+         "value": "other",
+         "label": "Other"
+        }
+       ],
+       "default": "plug",
+       "width": "14%"
+      },
+      {
+       "type": "select",
+       "attr": "unit",
+       "title": "Unit",
+       "options": [
+        {
+         "value": "auto",
+         "label": "automatic (W, kW from the object)"
+        },
+        {
+         "value": "W",
+         "label": "W"
+        },
+        {
+         "value": "kW",
+         "label": "kW"
+        }
+       ],
+       "default": "auto",
+       "width": "12%"
+      },
+      {
+       "type": "number",
+       "attr": "scale",
+       "title": "Factor",
+       "default": 1,
+       "width": "8%"
+      },
+      {
+       "type": "select",
+       "attr": "signed",
+       "title": "Sign",
+       "options": [
+        {
+         "value": "",
+         "label": "normal"
+        },
+        {
+         "value": "16",
+         "label": "signed 16 bit (Modbus)"
+        },
+        {
+         "value": "32",
+         "label": "signed 32 bit (Modbus)"
+        }
+       ],
+       "default": "",
+       "width": "12%"
+      },
+      {
+       "type": "checkbox",
+       "attr": "invert",
+       "title": "inverted",
+       "width": "6%"
+      }
+     ]
+    }
+   }
+  },
+  "_surplus": {
+   "type": "panel",
+   "label": "Surplus",
+   "items": {
+    "surplusHelp": {
+     "type": "staticText",
+     "text": "surplus.active becomes true when the surplus stays above the switch-on value for the delay, and false when it stays below the switch-off value. Use it e.g. in ioBroker.logik to switch the heat pump or wallbox.",
+     "xs": 12
+    },
+    "surplusOn": {
+     "type": "number",
+     "label": "Switch on above (W)",
+     "default": 1500,
+     "min": 0,
+     "xs": 12,
+     "sm": 3,
+     "newLine": true
+    },
+    "surplusOff": {
+     "type": "number",
+     "label": "Switch off below (W)",
+     "default": 300,
+     "min": 0,
+     "xs": 12,
+     "sm": 3
+    },
+    "surplusDelay": {
+     "type": "number",
+     "label": "Delay (min)",
+     "default": 5,
+     "min": 0,
+     "xs": 12,
+     "sm": 3
+    },
+    "surplusBattery": {
+     "type": "checkbox",
+     "label": "Battery charging counts as surplus",
+     "xs": 12,
+     "sm": 3
+    }
+   }
+  },
+  "_page": {
+   "type": "panel",
+   "label": "Page",
+   "items": {
+    "pageHelp": {
+     "type": "staticText",
+     "text": "The page /flow shows the flow, today's values and the day chart. VIS-2: HTML widget with <iframe src=\"http://<ioBroker>:8101/flow?view=flow&bg=transparent\">. Parameters: view=flow|stats|chart, theme=dark|light, bg=transparent. SmartView has its own tile 'Energiefluss'.",
+     "xs": 12
+    },
+    "port": {
+     "type": "port",
+     "label": "Port",
+     "default": 8101,
+     "xs": 12,
+     "sm": 3,
+     "newLine": true
+    },
+    "publicHost": {
+     "type": "text",
+     "label": "Address for links (optional)",
+     "help": "empty = IP address of this host",
+     "xs": 12,
+     "sm": 4
+    },
+    "accessKey": {
+     "type": "text",
+     "label": "Access key (optional)",
+     "help": "then the address needs ?key=…",
+     "xs": 12,
+     "sm": 5
+    }
+   }
+  }
+ }
+}

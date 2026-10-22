@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Energie</title>
+<link rel="icon" href="energie.png">
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+<main id="app">
+  <section id="flowBox" class="box"><div id="flow"></div><div id="note" class="note" hidden></div></section>
+  <section id="statsBox" class="box"><h2>Heute</h2><div id="stats"></div></section>
+  <section id="chartBox" class="box">
+    <div class="chead"><h2 id="dayTitle">Tagesverlauf</h2><span class="grow"></span>
+      <button type="button" id="prev" aria-label="Tag davor">‹</button><button type="button" id="next" aria-label="Tag danach">›</button></div>
+    <div id="dayStats" class="daystats"></div>
+    <div id="chart"></div>
+  </section>
+</main>
+<script src="render.js"></script>
+<script src="flow.js"></script>
+</body>
+</html>

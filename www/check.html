@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Energie – Werte prüfen</title>
+<link rel="icon" href="energie.png">
+<link rel="stylesheet" href="page.css">
+<style>
+  #app { max-width: 1000px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--ef-line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td .id { color: var(--muted); font-size: 12px; word-break: break-all; }
+  .bad { color: #e5484d; }
+  .sum { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .sum b { font-variant-numeric: tabular-nums; }
+  p { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+  @media (max-width: 640px) { .opt { display: none; } }
+</style>
+</head>
+<body class="auto">
+<main id="app">
+  <section class="box">
+    <h2>Werte prüfen</h2>
+    <p>So kommen die Datenpunkte an und so rechnet der Adapter sie um. Stimmt ein Wert nicht (z. B. 10-mal zu groß, 65535 statt −1, Einspeisung als Bezug), in den Instanz-Einstellungen <b>Einheit</b>, <b>Faktor</b>, <b>Vorzeichen (Modbus)</b> oder <b>umgekehrt</b> ändern und speichern – die Seite aktualisiert sich alle 2 Sekunden.</p>
+  </section>
+  <section class="box"><h2>Ergebnis</h2><div id="sum" class="sum"></div></section>
+  <section class="box"><table><thead><tr><th>Wofür / Datenpunkt</th><th class="num">Rohwert</th><th class="opt">Einstellung</th><th class="num">Ergebnis</th></tr></thead><tbody id="rows"></tbody></table></section>
+</main>
+<script src="render.js"></script>
+<script>
+'use strict';
+const esc = s => String(s === undefined || s === null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+document.documentElement.classList.add('auto');
+async function load() {
+  const res = await fetch('api/check' + location.search);
+  if (!res.ok) return;
+  const d = await res.json();
+  document.getElementById('rows').innerHTML = d.inputs.map(i =>
+    '<tr><td>' + esc(i.label) + '<div class="id">' + esc(i.id) + (i.exists ? '' : ' <span class="bad">– gibt es nicht</span>') + '</div></td>' +
+    '<td class="num">' + esc(i.raw === null ? '–' : i.raw) + (i.objUnit ? ' ' + esc(i.objUnit) : '') + '</td>' +
+    '<td class="opt">' + esc(i.setting) + '</td>' +
+    '<td class="num' + (i.value === null ? ' bad' : '') + '">' + (i.value === null ? 'keine Zahl' : i.unit === 'raw' ? esc(Math.round(i.value)) + ' %' : EnergyView.fmtW(i.value)) + '</td></tr>').join('');
+  const s = d.s;
+  const f = EnergyView.fmtW;
+  const parts = [['PV', f(s.pv)], ['Netz', s.grid === null ? '–' : s.grid > 0 ? f(s.grid) + ' Bezug' : s.grid < 0 ? f(-s.grid) + ' Einspeisung' : '0 W']];
+  if (s.battery !== null) parts.push(['Batterie', s.battery > 0 ? f(s.battery) + ' lädt' : s.battery < 0 ? f(-s.battery) + ' entlädt' : '0 W'], ['Ladestand', s.soc === null ? '–' : s.soc + ' %']);
+  parts.push(['Haus' + (d.houseMeasured ? '' : ' (berechnet)'), f(s.house)]);
+  for (const c of s.consumers) parts.push([c.name, f(c.w)]);
+  parts.push(['Überschuss', f(d.surplus.power) + (d.surplus.active ? ' – aktiv' : '')]);
+  document.getElementById('sum').innerHTML = parts.map(p => '<span>' + esc(p[0]) + ': <b>' + esc(p[1]) + '</b></span>').join('');
+}
+load();
+setInterval(load, 2000);
+</script>
+</body>
+</html>
