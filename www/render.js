@@ -181,8 +181,8 @@ const EnergyView = (() => {
       ['house', 'Verbraucht', fmtKwh(t.house), ''],
       ['grid', 'Bezogen', fmtKwh(t.import), 'import'],
       ['grid', 'Eingespeist', fmtKwh(t.export), 'export'],
-      ['other', 'Autarkie', pct(t.autarky), 'big'],
-      ['sun', 'Eigenverbrauch', pct(t.selfUse), 'big'],
+      ['other', 'Autarkie', pct(t.autarky), 'pct'],
+      ['sun', 'Eigenverbrauch', pct(t.selfUse), 'pct'],
     ];
     if (withBattery) cards.push(['battery', 'Geladen', fmtKwh(t.charge), 'battery'], ['battery', 'Entladen', fmtKwh(t.discharge), 'battery']);
     el.innerHTML = '<div class="ef-stats">' + cards.map(c => '<div class="ef-card ' + c[3] + '"><svg viewBox="0 0 24 24" class="ef-cic">' + ICON[c[0]] + '</svg><span class="ef-ct">' + c[1] + '</span><b>' + c[2] + '</b></div>').join('') + '</div>';

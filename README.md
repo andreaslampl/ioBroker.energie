@@ -46,7 +46,7 @@ Datenpunkts, aktualisiert alle 2 Sekunden. Einstellung ändern, speichern, schau
   - `view=flow` nur der Fluss, `view=stats` nur die Tageswerte, `view=chart` nur die Kurve (ohne = alles)
   - `theme=dark` / `theme=light` (ohne = wie das Gerät), `bg=transparent` ohne Hintergrund
   - mit Zugriffsschlüssel zusätzlich `&key=…`
-- **SmartView:** Kachel-Art „Energiefluss“ (ab SmartView 0.14.0)
+- **SmartView:** Kachel-Art „Energiefluss“ (ab SmartView 0.14.0) – Instanz wählen, fertig
 
 ## Datenpunkte
 
