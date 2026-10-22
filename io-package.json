@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "news": {
+      "0.2.1": {
+        "en": "Every data point has \"inverted\" (negative becomes positive): also grid, battery and house",
+        "de": "Jeder Datenpunkt hat „umgekehrt“ (aus negativ wird positiv): jetzt auch Netz, Batterie und Haus"
+      },
       "0.2.0": {
         "en": "Appearance: round or square symbols, running dots/dashes or solid lines, animation always/as device/off, own symbols for PV, grid, battery, house; more symbols for consumers",
         "de": "Darstellung: Symbole rund oder eckig, laufende Punkte/Striche oder durchgehende Linien, Animation immer/wie am Gerät/aus, eigene Symbole für PV, Netz, Batterie, Haus; mehr Symbole für Verbraucher"
@@ -100,7 +104,10 @@
     "pvIcon": "sun",
     "gridIcon": "grid",
     "batteryIcon": "battery",
-    "houseIcon": "house"
+    "houseIcon": "house",
+    "gridInvert": false,
+    "batteryInvert": false,
+    "houseInvert": false
   },
   "objects": [],
   "instanceObjects": [

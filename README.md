@@ -34,7 +34,7 @@ Pro Datenpunkt gibt es:
 - **Einheit** – automatisch (W oder kW aus dem Objekt), oder fest W / kW
 - **Faktor** – z. B. `0.1` wenn das Register 10-mal zu groß ist, `10` wenn zu klein
 - **Vorzeichen** – *vorzeichenbehaftet 16/32 Bit*, wenn negative Werte als 65535 … ankommen
-- **umgekehrt** – wenn Laden/Entladen oder Bezug/Einspeisung vertauscht sind
+- **umgekehrt** – aus negativ wird positiv (bei jedem Datenpunkt: PV, Netz, Batterie, Haus, Verbraucher)
 
 Zum Ausprobieren gibt es die Seite **`/check`** („Werte prüfen“): Rohwert, Einstellung und Ergebnis jedes
 Datenpunkts, aktualisiert alle 2 Sekunden. Einstellung ändern, speichern, schauen.
@@ -65,6 +65,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.2.1
+- „umgekehrt“ bei jedem Datenpunkt (jetzt auch Netz, Batterie, Haus).
 
 ### 0.2.0
 - Darstellung: rund/eckig, Punkte/Striche/durchgehend, Animation immer/wie Gerät/aus, Symbole wählbar; mehr Symbole für Verbraucher.

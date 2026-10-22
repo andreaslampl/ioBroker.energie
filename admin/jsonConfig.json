@@ -77,7 +77,7 @@
     },
     "pvInvert": {
      "type": "checkbox",
-     "label": "inverted (PV shows negative)",
+     "label": "inverted (negative becomes positive)",
      "xs": 12,
      "newLine": true
     },
@@ -269,6 +269,13 @@
      "default": "",
      "xs": 6,
      "sm": 5
+    },
+    "gridInvert": {
+     "type": "checkbox",
+     "label": "inverted (negative becomes positive)",
+     "xs": 12,
+     "newLine": true,
+     "hidden": "data.gridMode === 'split'"
     }
    }
   },
@@ -356,6 +363,12 @@
      "xs": 6,
      "sm": 5
     },
+    "batteryInvert": {
+     "type": "checkbox",
+     "label": "inverted (negative becomes positive)",
+     "xs": 12,
+     "newLine": true
+    },
     "batterySoc": {
      "type": "objectId",
      "label": "Charge level (%)",
@@ -440,6 +453,12 @@
      "default": "",
      "xs": 6,
      "sm": 5
+    },
+    "houseInvert": {
+     "type": "checkbox",
+     "label": "inverted (negative becomes positive)",
+     "xs": 12,
+     "newLine": true
     }
    }
   },

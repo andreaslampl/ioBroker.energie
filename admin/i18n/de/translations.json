@@ -90,6 +90,7 @@
   "import and export separately": "Bezug und Einspeisung getrennt",
   "inverted": "umgekehrt",
   "inverted (PV shows negative)": "umgekehrt (PV kommt negativ)",
+  "inverted (negative becomes positive)": "umgekehrt (aus negativ wird positiv)",
   "normal": "normal",
   "off": "aus",
   "one data point (+/-)": "ein Datenpunkt (+/−)",

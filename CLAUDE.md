@@ -30,6 +30,8 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   CSS stopped them under prefers-reduced-motion (likely Windows animation effects off on the touch PC) ->
   `view` {shape, line dots|dash|solid, anim on (default)|auto|off, icons} in cfg + `live.view`;
   `flow.update(s, view)`; square = rect with rx, SOC ring via pathLength=100. More icons (model `ICONS` = render).
+- 0.2.1: owner wanted to flip the sign on every data point -> `invert` is part of `conv()` and applied in
+  `convert()` (not in snapshot); checkboxes gridInvert/batteryInvert/houseInvert added.
 
 ## Conventions
 

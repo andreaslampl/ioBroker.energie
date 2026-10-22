@@ -285,6 +285,9 @@ class Energie extends utils.Adapter {
             if (i.signed) {
                 parts.push(`Vorzeichen ${i.signed} Bit`);
             }
+            if (i.invert) {
+                parts.push('umgekehrt');
+            }
             return parts.join(' · ');
         };
         return {

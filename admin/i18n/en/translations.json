@@ -90,6 +90,7 @@
   "import and export separately": "import and export separately",
   "inverted": "inverted",
   "inverted (PV shows negative)": "inverted (PV shows negative)",
+  "inverted (negative becomes positive)": "inverted (negative becomes positive)",
   "normal": "normal",
   "off": "off",
   "one data point (+/-)": "one data point (+/-)",

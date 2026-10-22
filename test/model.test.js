@@ -28,7 +28,8 @@ test('snapshot: signs, computed house, consumers, missing values', () => {
         consumers: [{ name: 'Wallbox', state: 'wb', icon: 'car' }, { name: 'Wärmepumpe', state: 'wp', icon: 'heatpump' }],
     });
     assert.deepEqual(inputs(cfg).map(i => i.id), ['pv1', 'pv2', 'grid', 'bat', 'soc', 'wb', 'wp']);
-    const v = { pv1: 4000, pv2: -1000, grid: 1500, bat: -800, soc: 64.4, wb: 1100 };
+    // get() delivers converted values (sign, factor, "umgekehrt" are applied in convert())
+    const v = { pv1: 4000, pv2: 1000, grid: 1500, bat: -800, soc: 64.4, wb: 1100 };
     const s = snapshot(cfg, id => (id in v ? v[id] : null), 1000);
     // export 1500 (positive = export), battery charging 800 (positive = discharge)
     assert.deepEqual([s.pv, s.grid, s.import, s.export, s.battery, s.charge, s.soc], [5000, -1500, 0, 1500, 800, 800, 64]);
@@ -79,4 +80,12 @@ test('day: energy, autarky, self consumption; history; surplus', () => {
     assert.equal(at(100000, 100).active, true);
     assert.equal(at(159000, 100).active, true);
     assert.equal(at(160000, 100).active, false, 'below 300 for a minute');
+});
+
+test('"umgekehrt" on every data point: negative becomes positive', () => {
+    const cfg = cleanConfig({ pvState: 'pv', pvInvert: true, gridState: 'g', gridInvert: true, batteryState: 'b', batteryInvert: true, houseState: 'h', houseInvert: true, consumers: [{ name: 'WP', state: 'wp', invert: true }] });
+    const raw = { pv: -3000, g: 500, b: 700, h: -2000, wp: -800 };
+    const ins = Object.fromEntries(inputs(cfg).map(i => [i.id, i]));
+    const s = snapshot(cfg, id => convert(raw[id], ins[id], 'W'));
+    assert.deepEqual([s.pv, s.grid, s.battery, s.house, s.consumers[0].w], [3000, -500, -700, 2000, 800]);
 });
