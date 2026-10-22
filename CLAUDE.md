@@ -32,6 +32,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   `flow.update(s, view)`; square = rect with rx, SOC ring via pathLength=100. More icons (model `ICONS` = render).
 - 0.2.1: owner wanted to flip the sign on every data point -> `invert` is part of `conv()` and applied in
   `convert()` (not in snapshot); checkboxes gridInvert/batteryInvert/houseInvert added.
+- 0.2.2 field: consumer dots ran towards the house (consumer paths were drawn house->consumer but animated
+  'reverse'); owner then ticked "umgekehrt" and got 0 W (negative consumption is clamped). Now every path
+  runs node->house, direction normal = towards the house.
 
 ## Conventions
 

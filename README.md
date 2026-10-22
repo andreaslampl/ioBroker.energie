@@ -66,6 +66,9 @@ Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
 
+### 0.2.2
+- Behoben: Animation zu den Verbrauchern lief in die falsche Richtung (zum Haus).
+
 ### 0.2.1
 - „umgekehrt“ bei jedem Datenpunkt (jetzt auch Netz, Batterie, Haus).
 

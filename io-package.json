@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "news": {
+      "0.2.2": {
+        "en": "Fixed: the dots to the consumers ran towards the house instead of from the house to the consumer",
+        "de": "Behoben: die Punkte zu den Verbrauchern liefen zum Haus statt vom Haus zum Verbraucher"
+      },
       "0.2.1": {
         "en": "Every data point has \"inverted\" (negative becomes positive): also grid, battery and house",
         "de": "Jeder Datenpunkt hat „umgekehrt“ (aus negativ wird positiv): jetzt auch Netz, Batterie und Haus"

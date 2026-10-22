@@ -113,8 +113,9 @@ const EnergyView = (() => {
       let svg = '<svg class="' + cls.join(' ') + '" viewBox="0 0 360 ' + h + '" role="img" aria-label="Energiefluss">';
       for (const n of nodes) {
         if (n.key === 'house') continue;
-        // drawn from the node to the house; the animation direction says which way it flows
-        const d = n.consumer ? line(house, n, sq) : line(n, house, sq);
+        // every line runs from the node to the house: normal = towards the house, reverse = away from it
+        // (consumers: reverse, the energy flows from the house to them)
+        const d = line(n, house, sq);
         svg += '<path class="ef-base" d="' + d + '"/><path class="ef-dots" data-line="' + esc(n.key) + '" d="' + d + '"/>';
       }
       for (const n of nodes) {
