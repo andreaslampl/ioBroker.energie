@@ -26,6 +26,10 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
 - 0.1.1 field: owner found no place to enter the PV value (the PV table only shows a + button) -> own field
   `pvState` (+ pvUnit/pvScale/pvSigned/pvInvert), table renamed `pvMore`; old `pv` table still read.
   jsonConfig validated against ioBroker/json-config schemas/jsonConfig.json (ajv).
+- 0.2.0: owner asked for animated lines and round/square/own symbols. Lines were animated already, but the
+  CSS stopped them under prefers-reduced-motion (likely Windows animation effects off on the touch PC) ->
+  `view` {shape, line dots|dash|solid, anim on (default)|auto|off, icons} in cfg + `live.view`;
+  `flow.update(s, view)`; square = rect with rx, SOC ring via pathLength=100. More icons (model `ICONS` = render).
 
 ## Conventions
 

@@ -23,7 +23,7 @@
 
   function onLive(d) {
     if (!d || !d.s) return;
-    flow.update(d.s);
+    flow.update(d.s, d.view);
     EnergyView.stats($('stats'), d.today, d.s.battery !== null);
     const miss = d.s.missing || [];
     $('note').hidden = !miss.length;

@@ -475,8 +475,52 @@
        "title": "Symbol",
        "options": [
         {
+         "value": "sun",
+         "label": "Sun"
+        },
+        {
+         "value": "panel",
+         "label": "Solar panel"
+        },
+        {
+         "value": "roof",
+         "label": "Roof with PV"
+        },
+        {
+         "value": "inverter",
+         "label": "Inverter"
+        },
+        {
+         "value": "grid",
+         "label": "Pylon"
+        },
+        {
+         "value": "pylon",
+         "label": "Power line"
+        },
+        {
+         "value": "meter",
+         "label": "Meter"
+        },
+        {
+         "value": "battery",
+         "label": "Battery"
+        },
+        {
+         "value": "house",
+         "label": "House"
+        },
+        {
+         "value": "factory",
+         "label": "Building / company"
+        },
+        {
          "value": "car",
-         "label": "Car / wallbox"
+         "label": "Car"
+        },
+        {
+         "value": "wallbox",
+         "label": "Wallbox"
         },
         {
          "value": "heatpump",
@@ -484,15 +528,43 @@
         },
         {
          "value": "water",
-         "label": "Hot water / heating rod"
+         "label": "Hot water"
+        },
+        {
+         "value": "boiler",
+         "label": "Boiler / heating rod"
         },
         {
          "value": "heat",
          "label": "Heating"
         },
         {
+         "value": "ac",
+         "label": "Air conditioning"
+        },
+        {
          "value": "pool",
          "label": "Pool"
+        },
+        {
+         "value": "pump",
+         "label": "Pump"
+        },
+        {
+         "value": "washer",
+         "label": "Washing machine"
+        },
+        {
+         "value": "kitchen",
+         "label": "Kitchen"
+        },
+        {
+         "value": "tv",
+         "label": "TV"
+        },
+        {
+         "value": "server",
+         "label": "Server / IT"
         },
         {
          "value": "light",
@@ -504,7 +576,7 @@
         },
         {
          "value": "other",
-         "label": "Other"
+         "label": "Lightning"
         }
        ],
        "default": "plug",
@@ -608,6 +680,531 @@
      "type": "checkbox",
      "label": "Battery charging counts as surplus",
      "xs": 12,
+     "sm": 3
+    }
+   }
+  },
+  "_view": {
+   "type": "panel",
+   "label": "Appearance",
+   "items": {
+    "viewHelp": {
+     "type": "staticText",
+     "text": "How the flow looks on the page /flow, in VIS-2 and in SmartView.",
+     "xs": 12
+    },
+    "shape": {
+     "type": "select",
+     "label": "Symbols",
+     "options": [
+      {
+       "value": "round",
+       "label": "round"
+      },
+      {
+       "value": "square",
+       "label": "square"
+      }
+     ],
+     "default": "round",
+     "xs": 12,
+     "sm": 4,
+     "newLine": true
+    },
+    "lineStyle": {
+     "type": "select",
+     "label": "Lines",
+     "options": [
+      {
+       "value": "dots",
+       "label": "running dots"
+      },
+      {
+       "value": "dash",
+       "label": "running dashes"
+      },
+      {
+       "value": "solid",
+       "label": "solid, pulsing"
+      }
+     ],
+     "default": "dots",
+     "xs": 12,
+     "sm": 4
+    },
+    "animation": {
+     "type": "select",
+     "label": "Animation",
+     "options": [
+      {
+       "value": "on",
+       "label": "always on"
+      },
+      {
+       "value": "auto",
+       "label": "as set on the device"
+      },
+      {
+       "value": "off",
+       "label": "off"
+      }
+     ],
+     "default": "on",
+     "help": "'as set on the device': off when the device reduces motion (Windows animation effects, iPhone reduce motion)",
+     "xs": 12,
+     "sm": 4
+    },
+    "pvIcon": {
+     "type": "select",
+     "label": "Symbol PV",
+     "options": [
+      {
+       "value": "sun",
+       "label": "Sun"
+      },
+      {
+       "value": "panel",
+       "label": "Solar panel"
+      },
+      {
+       "value": "roof",
+       "label": "Roof with PV"
+      },
+      {
+       "value": "inverter",
+       "label": "Inverter"
+      },
+      {
+       "value": "grid",
+       "label": "Pylon"
+      },
+      {
+       "value": "pylon",
+       "label": "Power line"
+      },
+      {
+       "value": "meter",
+       "label": "Meter"
+      },
+      {
+       "value": "battery",
+       "label": "Battery"
+      },
+      {
+       "value": "house",
+       "label": "House"
+      },
+      {
+       "value": "factory",
+       "label": "Building / company"
+      },
+      {
+       "value": "car",
+       "label": "Car"
+      },
+      {
+       "value": "wallbox",
+       "label": "Wallbox"
+      },
+      {
+       "value": "heatpump",
+       "label": "Heat pump"
+      },
+      {
+       "value": "water",
+       "label": "Hot water"
+      },
+      {
+       "value": "boiler",
+       "label": "Boiler / heating rod"
+      },
+      {
+       "value": "heat",
+       "label": "Heating"
+      },
+      {
+       "value": "ac",
+       "label": "Air conditioning"
+      },
+      {
+       "value": "pool",
+       "label": "Pool"
+      },
+      {
+       "value": "pump",
+       "label": "Pump"
+      },
+      {
+       "value": "washer",
+       "label": "Washing machine"
+      },
+      {
+       "value": "kitchen",
+       "label": "Kitchen"
+      },
+      {
+       "value": "tv",
+       "label": "TV"
+      },
+      {
+       "value": "server",
+       "label": "Server / IT"
+      },
+      {
+       "value": "light",
+       "label": "Light"
+      },
+      {
+       "value": "plug",
+       "label": "Socket / device"
+      },
+      {
+       "value": "other",
+       "label": "Lightning"
+      }
+     ],
+     "default": "sun",
+     "xs": 6,
+     "sm": 3,
+     "newLine": true
+    },
+    "gridIcon": {
+     "type": "select",
+     "label": "Symbol grid",
+     "options": [
+      {
+       "value": "sun",
+       "label": "Sun"
+      },
+      {
+       "value": "panel",
+       "label": "Solar panel"
+      },
+      {
+       "value": "roof",
+       "label": "Roof with PV"
+      },
+      {
+       "value": "inverter",
+       "label": "Inverter"
+      },
+      {
+       "value": "grid",
+       "label": "Pylon"
+      },
+      {
+       "value": "pylon",
+       "label": "Power line"
+      },
+      {
+       "value": "meter",
+       "label": "Meter"
+      },
+      {
+       "value": "battery",
+       "label": "Battery"
+      },
+      {
+       "value": "house",
+       "label": "House"
+      },
+      {
+       "value": "factory",
+       "label": "Building / company"
+      },
+      {
+       "value": "car",
+       "label": "Car"
+      },
+      {
+       "value": "wallbox",
+       "label": "Wallbox"
+      },
+      {
+       "value": "heatpump",
+       "label": "Heat pump"
+      },
+      {
+       "value": "water",
+       "label": "Hot water"
+      },
+      {
+       "value": "boiler",
+       "label": "Boiler / heating rod"
+      },
+      {
+       "value": "heat",
+       "label": "Heating"
+      },
+      {
+       "value": "ac",
+       "label": "Air conditioning"
+      },
+      {
+       "value": "pool",
+       "label": "Pool"
+      },
+      {
+       "value": "pump",
+       "label": "Pump"
+      },
+      {
+       "value": "washer",
+       "label": "Washing machine"
+      },
+      {
+       "value": "kitchen",
+       "label": "Kitchen"
+      },
+      {
+       "value": "tv",
+       "label": "TV"
+      },
+      {
+       "value": "server",
+       "label": "Server / IT"
+      },
+      {
+       "value": "light",
+       "label": "Light"
+      },
+      {
+       "value": "plug",
+       "label": "Socket / device"
+      },
+      {
+       "value": "other",
+       "label": "Lightning"
+      }
+     ],
+     "default": "grid",
+     "xs": 6,
+     "sm": 3
+    },
+    "batteryIcon": {
+     "type": "select",
+     "label": "Symbol battery",
+     "options": [
+      {
+       "value": "sun",
+       "label": "Sun"
+      },
+      {
+       "value": "panel",
+       "label": "Solar panel"
+      },
+      {
+       "value": "roof",
+       "label": "Roof with PV"
+      },
+      {
+       "value": "inverter",
+       "label": "Inverter"
+      },
+      {
+       "value": "grid",
+       "label": "Pylon"
+      },
+      {
+       "value": "pylon",
+       "label": "Power line"
+      },
+      {
+       "value": "meter",
+       "label": "Meter"
+      },
+      {
+       "value": "battery",
+       "label": "Battery"
+      },
+      {
+       "value": "house",
+       "label": "House"
+      },
+      {
+       "value": "factory",
+       "label": "Building / company"
+      },
+      {
+       "value": "car",
+       "label": "Car"
+      },
+      {
+       "value": "wallbox",
+       "label": "Wallbox"
+      },
+      {
+       "value": "heatpump",
+       "label": "Heat pump"
+      },
+      {
+       "value": "water",
+       "label": "Hot water"
+      },
+      {
+       "value": "boiler",
+       "label": "Boiler / heating rod"
+      },
+      {
+       "value": "heat",
+       "label": "Heating"
+      },
+      {
+       "value": "ac",
+       "label": "Air conditioning"
+      },
+      {
+       "value": "pool",
+       "label": "Pool"
+      },
+      {
+       "value": "pump",
+       "label": "Pump"
+      },
+      {
+       "value": "washer",
+       "label": "Washing machine"
+      },
+      {
+       "value": "kitchen",
+       "label": "Kitchen"
+      },
+      {
+       "value": "tv",
+       "label": "TV"
+      },
+      {
+       "value": "server",
+       "label": "Server / IT"
+      },
+      {
+       "value": "light",
+       "label": "Light"
+      },
+      {
+       "value": "plug",
+       "label": "Socket / device"
+      },
+      {
+       "value": "other",
+       "label": "Lightning"
+      }
+     ],
+     "default": "battery",
+     "xs": 6,
+     "sm": 3
+    },
+    "houseIcon": {
+     "type": "select",
+     "label": "Symbol house",
+     "options": [
+      {
+       "value": "sun",
+       "label": "Sun"
+      },
+      {
+       "value": "panel",
+       "label": "Solar panel"
+      },
+      {
+       "value": "roof",
+       "label": "Roof with PV"
+      },
+      {
+       "value": "inverter",
+       "label": "Inverter"
+      },
+      {
+       "value": "grid",
+       "label": "Pylon"
+      },
+      {
+       "value": "pylon",
+       "label": "Power line"
+      },
+      {
+       "value": "meter",
+       "label": "Meter"
+      },
+      {
+       "value": "battery",
+       "label": "Battery"
+      },
+      {
+       "value": "house",
+       "label": "House"
+      },
+      {
+       "value": "factory",
+       "label": "Building / company"
+      },
+      {
+       "value": "car",
+       "label": "Car"
+      },
+      {
+       "value": "wallbox",
+       "label": "Wallbox"
+      },
+      {
+       "value": "heatpump",
+       "label": "Heat pump"
+      },
+      {
+       "value": "water",
+       "label": "Hot water"
+      },
+      {
+       "value": "boiler",
+       "label": "Boiler / heating rod"
+      },
+      {
+       "value": "heat",
+       "label": "Heating"
+      },
+      {
+       "value": "ac",
+       "label": "Air conditioning"
+      },
+      {
+       "value": "pool",
+       "label": "Pool"
+      },
+      {
+       "value": "pump",
+       "label": "Pump"
+      },
+      {
+       "value": "washer",
+       "label": "Washing machine"
+      },
+      {
+       "value": "kitchen",
+       "label": "Kitchen"
+      },
+      {
+       "value": "tv",
+       "label": "TV"
+      },
+      {
+       "value": "server",
+       "label": "Server / IT"
+      },
+      {
+       "value": "light",
+       "label": "Light"
+      },
+      {
+       "value": "plug",
+       "label": "Socket / device"
+      },
+      {
+       "value": "other",
+       "label": "Lightning"
+      }
+     ],
+     "default": "house",
+     "xs": 6,
      "sm": 3
     }
    }

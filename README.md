@@ -24,6 +24,7 @@ Die Werte können aus **jedem Adapter** kommen (Modbus, SMA, Fronius, Huawei, Ko
 | **Batterie & Haus** | Batterie-Leistung (+ was „positiv“ bedeutet) und Ladestand – optional. Hausverbrauch optional: leer = der Adapter rechnet ihn aus. |
 | **Verbraucher** | Bis zu 8, z. B. Wallbox, Wärmepumpe, Heizstab – mit Symbol. Sie hängen unter dem Haus. |
 | **Überschuss** | Ein-/Ausschaltschwelle und Verzögerung für `surplus.active`. |
+| **Darstellung** | Symbole rund oder eckig; Linien als laufende Punkte, laufende Striche oder durchgehend pulsierend; Animation immer an (Standard), wie am Gerät eingestellt oder aus; eigenes Symbol für PV, Netz, Batterie und Haus (z. B. Solarmodul, Zähler, Dach mit PV). |
 | **Seite** | Port (Standard 8101), Zugriffsschlüssel. |
 
 ### Modbus & Co.: Werte richtig hinbekommen
@@ -64,6 +65,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.2.0
+- Darstellung: rund/eckig, Punkte/Striche/durchgehend, Animation immer/wie Gerät/aus, Symbole wählbar; mehr Symbole für Verbraucher.
 
 ### 0.1.1
 - Einstellungen: eigenes Feld für die PV-Leistung; die Tabelle ist für weitere Wechselrichter/Strings.

@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "news": {
+      "0.2.0": {
+        "en": "Appearance: round or square symbols, running dots/dashes or solid lines, animation always/as device/off, own symbols for PV, grid, battery, house; more symbols for consumers",
+        "de": "Darstellung: Symbole rund oder eckig, laufende Punkte/Striche oder durchgehende Linien, Animation immer/wie am Gerät/aus, eigene Symbole für PV, Netz, Batterie, Haus; mehr Symbole für Verbraucher"
+      },
       "0.1.1": {
         "en": "Settings: own field for the PV power (the table is now for more inverters/strings)",
         "de": "Einstellungen: eigenes Feld für die PV-Leistung (die Tabelle ist jetzt für weitere Wechselrichter/Strings)"
@@ -89,7 +93,14 @@
     "surplusOn": 1500,
     "surplusOff": 300,
     "surplusDelay": 5,
-    "surplusBattery": false
+    "surplusBattery": false,
+    "shape": "round",
+    "lineStyle": "dots",
+    "animation": "on",
+    "pvIcon": "sun",
+    "gridIcon": "grid",
+    "batteryIcon": "battery",
+    "houseIcon": "house"
   },
   "objects": [],
   "instanceObjects": [

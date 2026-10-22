@@ -256,7 +256,7 @@ class Energie extends utils.Adapter {
     }
 
     live() {
-        return { s: this.last || null, today: this.day ? this.day.summary() : null, surplus: this.sur || null };
+        return { s: this.last || null, today: this.day ? this.day.summary() : null, surplus: this.sur || null, view: this.cfg.view };
     }
 
     /** chart data of a day (today when no date) */
