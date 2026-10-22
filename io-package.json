@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.2.3",
+    "version": "0.3.0",
     "news": {
+      "0.3.0": {
+        "en": "\"Anordnen\" on the page /flow: drag PV, grid, battery, house and consumers wherever you like; used by VIS-2 and SmartView too",
+        "de": "„Anordnen“ auf der Seite /flow: PV, Netz, Batterie, Haus und Verbraucher frei hinziehen; gilt auch für VIS-2 und SmartView"
+      },
       "0.2.3": {
         "en": "Long consumer names are no longer cut off (two lines, few consumers nearer the middle, room at the edges)",
         "de": "Lange Verbraucher-Namen werden nicht mehr abgeschnitten (zwei Zeilen, wenige Verbraucher näher zur Mitte, Rand nach Bedarf)"

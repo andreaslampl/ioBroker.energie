@@ -95,6 +95,11 @@ test('adapter: values from any adapter, Modbus factor/sign, states, page, values
     assert.equal(answer.message.date, live.today.date);
     assert.ok(Array.isArray(answer.message.points));
 
+    // own arrangement: only known symbols, saved and part of the live values
+    const saved = await (await fetch(base + 'api/positions', { method: 'POST', body: JSON.stringify({ pos: { pv: { x: 70, y: 80 }, evil: { x: 1, y: 1 }, c_wallbox: { x: 'a', y: 2 } } }) })).json();
+    assert.deepEqual(saved.pos, { pv: { x: 70, y: 80 } });
+    assert.deepEqual((await (await fetch(base + 'api/live')).json()).view.pos, { pv: { x: 70, y: 80 } });
+
     // a missing data point
     adapter.change('go-e.0.nrg.11', null);
     await until(() => adapter.val('info.connection') === false, 4000);

@@ -16,6 +16,36 @@
   document.head.appendChild(style);
 
   const flow = EnergyView.flow($('flow'));
+  // "Anordnen": own positions of the symbols, saved in the adapter (also used by SmartView)
+  let arranging = null; // positions while arranging
+  let lastLive = null;
+  const viewOf = d => (arranging ? { ...(d.view || {}), pos: arranging } : d.view);
+  if (view === 'all' && q.get('bg') !== 'transparent') $('arr').hidden = false;
+  const arrUi = on => {
+    for (const id of ['arrHint', 'arrReset', 'arrCancel', 'arrSave']) $(id).hidden = !on;
+    $('arrStart').hidden = on;
+  };
+  $('arrStart').onclick = () => {
+    arranging = { ...((lastLive && lastLive.view && lastLive.view.pos) || {}) };
+    arrUi(true);
+    flow.edit(true, pos => (arranging = pos));
+  };
+  const stop = () => {
+    arranging = null;
+    arrUi(false);
+    flow.edit(false);
+    if (lastLive) onLive(lastLive);
+  };
+  $('arrCancel').onclick = stop;
+  $('arrReset').onclick = () => {
+    arranging = {};
+    if (lastLive) onLive(lastLive);
+  };
+  $('arrSave').onclick = async () => {
+    const res = await fetch('api/positions' + location.search, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pos: arranging }) });
+    if (res.ok && lastLive) lastLive.view = { ...(lastLive.view || {}), pos: (await res.json()).pos };
+    stop();
+  };
   let today = null;
   let shown = null; // date of the chart; null = today
   let dates = [];
@@ -23,7 +53,8 @@
 
   function onLive(d) {
     if (!d || !d.s) return;
-    flow.update(d.s, d.view);
+    lastLive = d;
+    flow.update(d.s, viewOf(d));
     EnergyView.stats($('stats'), d.today, d.s.battery !== null);
     const miss = d.s.missing || [];
     $('note').hidden = !miss.length;

@@ -8,6 +8,17 @@ const { cleanConfig, inputs, convert, snapshot, Day, History, Surplus, dateKey }
 const { FlowServer } = require('./lib/server');
 
 const TICK_MS = 2000;
+
+/** {key: {x, y}} for pv, grid, battery, house, c_<consumer id>; numbers within the drawing */
+function cleanPositions(pos) {
+    const out = {};
+    for (const [k, v] of Object.entries(pos && typeof pos === 'object' ? pos : {})) {
+        if (/^(pv|grid|battery|house|c_[\w]{1,40})$/.test(k) && v && Number.isFinite(v.x) && Number.isFinite(v.y)) {
+            out[k] = { x: Math.max(-300, Math.min(700, Math.round(v.x))), y: Math.max(-300, Math.min(700, Math.round(v.y))) };
+        }
+    }
+    return out;
+}
 const SAVE_MS = 5 * 60000;
 
 function localAddress() {
@@ -52,6 +63,8 @@ class Energie extends utils.Adapter {
     async onReady() {
         await this.setState('info.connection', false, true);
         this.cfg = cleanConfig(this.config);
+        this.dir0 = this.dataDir || utils.getAbsoluteInstanceDataDir(this);
+        this.cfg.view.pos = this.loadPositions();
         this.inputs = inputs(this.cfg);
         this.dir = this.dataDir || utils.getAbsoluteInstanceDataDir(this);
         fs.mkdirSync(this.dir, { recursive: true });
@@ -79,7 +92,7 @@ class Energie extends utils.Adapter {
         this.server = new FlowServer({
             accessKey: key,
             log: this.log,
-            adapter: { live: () => this.live(), day: date => this.dayData(date), check: () => this.check() },
+            adapter: { live: () => this.live(), day: date => this.dayData(date), check: () => this.check(), setPositions: pos => this.setPositions(pos) },
         });
         try {
             await this.server.listen(port);
@@ -94,6 +107,26 @@ class Energie extends utils.Adapter {
         await this.tick();
         this.timer = setInterval(() => this.tick().catch(err => this.log.warn(`Update: ${err.message}`)), TICK_MS);
         this.saveTimer = setInterval(() => this.save(), SAVE_MS);
+    }
+
+    // ---------------- own arrangement of the symbols (positions.json) ----------------
+
+    loadPositions() {
+        try {
+            return cleanPositions(JSON.parse(fs.readFileSync(path.join(this.dir0, 'positions.json'), 'utf8')));
+        } catch {
+            return {};
+        }
+    }
+
+    setPositions(pos) {
+        const clean = cleanPositions(pos);
+        fs.mkdirSync(this.dir0, { recursive: true });
+        fs.writeFileSync(path.join(this.dir0, 'positions.json'), JSON.stringify(clean));
+        this.cfg.view.pos = clean;
+        this.log.info(`Arrangement saved (${Object.keys(clean).length} symbol(s) moved)`);
+        this.tick().catch(() => {});
+        return clean;
     }
 
     // ---------------- persistence ----------------

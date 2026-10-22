@@ -49,6 +49,12 @@ Datenpunkts, aktualisiert alle 2 Sekunden. Einstellung ändern, speichern, schau
   - mit Zugriffsschlüssel zusätzlich `&key=…`
 - **SmartView:** Kachel-Art „Energiefluss“ (ab SmartView 0.14.0) – Instanz wählen, fertig
 
+### Symbole frei anordnen
+
+Auf der Seite `http://<ioBroker>:8101/flow` oben rechts **„Anordnen“** tippen, dann PV, Netz, Batterie, Haus
+und Verbraucher mit Maus oder Finger an die gewünschte Stelle ziehen und **„Speichern“**. „Zurücksetzen“ stellt
+die Standard-Anordnung wieder her. Die Anordnung gilt überall: auf der Seite, in VIS‑2 und in SmartView.
+
 ## Datenpunkte
 
 | Datenpunkt | Inhalt |
@@ -65,6 +71,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.3.0
+- „Anordnen“: Symbole im Energiefluss frei platzieren (gilt auch für VIS‑2 und SmartView).
 
 ### 0.2.3
 - Lange Verbraucher-Namen werden nicht mehr abgeschnitten.

@@ -37,6 +37,10 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   runs node->house, direction normal = towards the house.
 - 0.2.3 field: long consumer names were cut off at the edges -> `labelLines()` (two lines over 13 chars),
   consumers spread 120 px apart up to 280, viewBox widened by the estimated label width (6.4 px/char).
+- 0.3.0: owner wanted to move the symbols freely -> `view.pos` {key: {x, y}} from positions.json (data dir,
+  `cleanPositions()`), POST /api/positions; render.js `flow.edit(on, cb)` drags nodes (5 px raster, viewBox
+  frozen while dragging), viewBox computed from all node positions; /flow "Anordnen" bar (not with ?view or
+  bg=transparent). SmartView shows the arrangement via `live.view`.
 
 ## Conventions
 

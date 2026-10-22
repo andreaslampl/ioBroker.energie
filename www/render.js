@@ -5,7 +5,9 @@
  * Used by the adapter's own page (/flow) and copied into ioBroker.smartview (keep in sync).
  *
  *   const f = EnergyView.flow(el);  f.update(snapshot, view)  animated flow (built once, then only updated)
- *     view: {shape: round|square, line: dots|dash|solid, anim: auto|on|off, icons: {pv, grid, battery, house}}
+ *     view: {shape: round|square, line: dots|dash|solid, anim: auto|on|off, icons: {pv, grid, battery, house},
+ *            pos: {pv|grid|battery|house|c_<id>: {x, y}}  (own arrangement, from f.edit())}
+ *   f.edit(true, pos => …)  drag the symbols; the callback gets the moved positions on every drop
  *   EnergyView.stats(el, summary, battery)                today's values
  *   EnergyView.chart(el, day)                             5-minute curve of a day, touch/hover shows values
  *
@@ -87,6 +89,12 @@ const EnergyView = (() => {
       const x = n === 1 ? 180 : 180 - spread / 2 + (spread / (n - 1)) * i;
       nodes.push({ key: 'c_' + c.id, x, y: 285, icon: c.icon, label: c.name, consumer: true, r: n > 5 ? 22 : 26 });
     });
+    // own arrangement
+    const pos = (view && view.pos) || {};
+    for (const nd of nodes) {
+      const p = pos[nd.key];
+      if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) Object.assign(nd, { x: p.x, y: p.y });
+    }
     return { nodes, h };
   }
 
@@ -114,8 +122,12 @@ const EnergyView = (() => {
   function flow(el) {
     let shape = '';
     let parts = {};
+    let last = null; // {s, view} of the last update
+    let vbNow = null;
+    let editCb = null;
+    let drag = null;
 
-    function build(s, view) {
+    function build(s, view, fixedVb) {
       const v = view || {};
       const sq = v.shape === 'square';
       const { nodes, h } = layout(s, v);
@@ -124,15 +136,20 @@ const EnergyView = (() => {
       // room for the labels: wider than 360 when a name at the edge would be cut off (~6.4 px per character)
       let minX = 0;
       let maxX = 360;
-      let extraH = 0;
+      let minY = 0;
+      let maxY = h;
       for (const n of nodes) {
         const lines = labelLines(n.label);
         const chars = Math.max(...lines.map(l => l.length), n.key === 'grid' || n.key === 'battery' ? 16 : 0);
-        minX = Math.min(minX, n.x - chars * 3.2 - 4);
-        maxX = Math.max(maxX, n.x + chars * 3.2 + 4);
-        if (n.consumer && lines.length > 1) extraH = 13;
+        const r = n.r || R;
+        minX = Math.min(minX, n.x - chars * 3.2 - 4, n.x - r - 6);
+        maxX = Math.max(maxX, n.x + chars * 3.2 + 4, n.x + r + 6);
+        minY = Math.min(minY, n.y - r - (n.key === 'pv' ? 24 : 6));
+        maxY = Math.max(maxY, n.y + r + (n.key === 'pv' ? 6 : 20 + 13 * (lines.length - 1)));
       }
-      const vb = [Math.floor(minX), 0, Math.ceil(maxX - minX), h + extraH];
+      // while dragging the view stays put, otherwise the symbol would run away from the finger
+      const vb = fixedVb || [Math.floor(minX), Math.floor(minY), Math.ceil(maxX - minX), Math.ceil(maxY - minY)];
+      vbNow = vb;
       let svg = '<svg class="' + cls.join(' ') + '" viewBox="' + vb.join(' ') + '" role="img" aria-label="Energiefluss">';
       for (const n of nodes) {
         if (n.key === 'house') continue;
@@ -186,11 +203,17 @@ const EnergyView = (() => {
     }
 
     function update(s, view) {
+      last = { s, view: view || {} };
+      if (drag) return;
       const key = [s.grid !== null && s.grid !== undefined, s.battery !== null && s.battery !== undefined, (s.consumers || []).map(c => c.id + c.icon + c.name).join(), JSON.stringify(view || {})].join('|');
       if (key !== shape) {
         shape = key;
         build(s, view);
       }
+      apply(s);
+    }
+
+    function apply(s) {
       setLine('pv', s.pv, true, COLOR.pv);
       setNode('pv', fmtW(s.pv), undefined, s.pv >= 10 ? 'active' : '');
       if (s.grid !== null && s.grid !== undefined) {
@@ -212,7 +235,49 @@ const EnergyView = (() => {
       }
     }
 
-    return { update };
+    /** symbol position from the pointer, in view coordinates, on a 5 px raster */
+    function at(e) {
+      const svg = el.querySelector('svg');
+      const p = svg.createSVGPoint();
+      p.x = e.clientX;
+      p.y = e.clientY;
+      const q = p.matrixTransform(svg.getScreenCTM().inverse());
+      return { x: Math.round(q.x / 5) * 5, y: Math.round(q.y / 5) * 5 };
+    }
+
+    el.addEventListener('pointerdown', e => {
+      const g = editCb && last && e.target.closest('[data-node]');
+      if (!g) return;
+      e.preventDefault();
+      el.setPointerCapture(e.pointerId);
+      drag = { key: g.dataset.node, vb: vbNow, pos: { ...(last.view.pos || {}) } };
+    });
+    el.addEventListener('pointermove', e => {
+      if (!drag) return;
+      drag.pos[drag.key] = at(e);
+      build(last.s, { ...last.view, pos: drag.pos }, drag.vb);
+      apply(last.s);
+      el.querySelector('[data-node="' + drag.key + '"]').classList.add('ef-drag');
+    });
+    const drop = () => {
+      if (!drag) return;
+      const pos = drag.pos;
+      drag = null;
+      last.view = { ...last.view, pos };
+      shape = '';
+      update(last.s, last.view);
+      editCb(pos);
+    };
+    el.addEventListener('pointerup', drop);
+    el.addEventListener('pointercancel', drop);
+
+    /** arrange mode: symbols can be dragged; cb(pos) after every drop */
+    function edit(on, cb) {
+      editCb = on ? cb : null;
+      el.classList.toggle('ef-editing', Boolean(on));
+    }
+
+    return { update, edit };
   }
 
   /** Today's values as cards. */
@@ -296,6 +361,7 @@ const EnergyView = (() => {
 
   const css = [
     '.ef-flow{width:100%;height:auto;display:block;font-family:inherit}',
+    '.ef-editing .ef-node{cursor:grab}.ef-editing .ef-flow{touch-action:none}.ef-editing .ef-bg{stroke-dasharray:4 3}.ef-drag{cursor:grabbing;opacity:.85}',
     '.ef-base{stroke:var(--ef-line,rgba(127,127,127,.25));stroke-width:3;fill:none}',
     '.ef-dots{fill:none;stroke-width:6;stroke-linecap:round;stroke-dasharray:0 14;animation:ef-run 1s linear infinite;visibility:hidden}',
     '.ef-line-dash .ef-dots{stroke-width:4;stroke-dasharray:10 8;animation-name:ef-run2}',
