@@ -35,6 +35,8 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
 - 0.2.2 field: consumer dots ran towards the house (consumer paths were drawn house->consumer but animated
   'reverse'); owner then ticked "umgekehrt" and got 0 W (negative consumption is clamped). Now every path
   runs node->house, direction normal = towards the house.
+- 0.2.3 field: long consumer names were cut off at the edges -> `labelLines()` (two lines over 13 chars),
+  consumers spread 120 px apart up to 280, viewBox widened by the estimated label width (6.4 px/char).
 
 ## Conventions
 

@@ -66,6 +66,9 @@ Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
 
+### 0.2.3
+- Lange Verbraucher-Namen werden nicht mehr abgeschnitten.
+
 ### 0.2.2
 - Behoben: Animation zu den Verbrauchern lief in die falsche Richtung (zum Haus).
 

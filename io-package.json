@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "news": {
+      "0.2.3": {
+        "en": "Long consumer names are no longer cut off (two lines, few consumers nearer the middle, room at the edges)",
+        "de": "Lange Verbraucher-Namen werden nicht mehr abgeschnitten (zwei Zeilen, wenige Verbraucher näher zur Mitte, Rand nach Bedarf)"
+      },
       "0.2.2": {
         "en": "Fixed: the dots to the consumers ran towards the house instead of from the house to the consumer",
         "de": "Behoben: die Punkte zu den Verbrauchern liefen zum Haus statt vom Haus zum Verbraucher"

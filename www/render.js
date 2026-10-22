@@ -82,10 +82,21 @@ const EnergyView = (() => {
     if (s.grid !== null && s.grid !== undefined) nodes.push({ key: 'grid', x: 48, y: 165, icon: ic.grid || 'grid', label: 'Netz' });
     if (s.battery !== null && s.battery !== undefined) nodes.push({ key: 'battery', x: 312, y: 165, icon: ic.battery || 'battery', label: 'Batterie' });
     (s.consumers || []).forEach((c, i) => {
-      const x = n === 1 ? 180 : 40 + (280 / (n - 1)) * i;
+      // few consumers stay near the middle, many use the whole width
+      const spread = Math.min(280, (n - 1) * 120);
+      const x = n === 1 ? 180 : 180 - spread / 2 + (spread / (n - 1)) * i;
       nodes.push({ key: 'c_' + c.id, x, y: 285, icon: c.icon, label: c.name, consumer: true, r: n > 5 ? 22 : 26 });
     });
     return { nodes, h };
+  }
+
+  /** long names in two lines (split at the space nearest the middle) */
+  function labelLines(text) {
+    const t = String(text || '');
+    if (t.length <= 13 || !t.includes(' ')) return [t];
+    let best = -1;
+    for (let i = 0; i < t.length; i++) if (t[i] === ' ' && (best < 0 || Math.abs(i - t.length / 2) < Math.abs(best - t.length / 2))) best = i;
+    return [t.slice(0, best), t.slice(best + 1)];
   }
 
   /** line from the edge of node a to the edge of node b */
@@ -110,7 +121,19 @@ const EnergyView = (() => {
       const { nodes, h } = layout(s, v);
       const house = nodes.find(n => n.key === 'house');
       const cls = ['ef-flow', 'ef-line-' + (['dash', 'solid'].includes(v.line) ? v.line : 'dots'), 'ef-anim-' + (['auto', 'off'].includes(v.anim) ? v.anim : 'on')];
-      let svg = '<svg class="' + cls.join(' ') + '" viewBox="0 0 360 ' + h + '" role="img" aria-label="Energiefluss">';
+      // room for the labels: wider than 360 when a name at the edge would be cut off (~6.4 px per character)
+      let minX = 0;
+      let maxX = 360;
+      let extraH = 0;
+      for (const n of nodes) {
+        const lines = labelLines(n.label);
+        const chars = Math.max(...lines.map(l => l.length), n.key === 'grid' || n.key === 'battery' ? 16 : 0);
+        minX = Math.min(minX, n.x - chars * 3.2 - 4);
+        maxX = Math.max(maxX, n.x + chars * 3.2 + 4);
+        if (n.consumer && lines.length > 1) extraH = 13;
+      }
+      const vb = [Math.floor(minX), 0, Math.ceil(maxX - minX), h + extraH];
+      let svg = '<svg class="' + cls.join(' ') + '" viewBox="' + vb.join(' ') + '" role="img" aria-label="Energiefluss">';
       for (const n of nodes) {
         if (n.key === 'house') continue;
         // every line runs from the node to the house: normal = towards the house, reverse = away from it
@@ -132,7 +155,9 @@ const EnergyView = (() => {
         svg += '<text class="ef-val" x="' + n.x + '" y="' + (n.y + (n.consumer ? 12 : 15)) + '" data-val></text>';
         const ly = n.key === 'pv' ? n.y - r - 8 : n.y + r + 15;
         // the house needs no label (the lines to the consumers would cross it)
-        svg += '<text class="ef-lbl" x="' + n.x + '" y="' + ly + '" data-lbl>' + (n.key === 'house' ? '' : esc(n.label)) + '</text></g>';
+        const lines = n.key === 'house' ? [''] : labelLines(n.label);
+        svg += '<text class="ef-lbl" x="' + n.x + '" y="' + ly + '" data-lbl>' +
+          (lines.length > 1 ? lines.map((l, i) => '<tspan x="' + n.x + '" dy="' + (i ? 13 : 0) + '">' + esc(l) + '</tspan>').join('') : esc(lines[0])) + '</text></g>';
       }
       svg += '</svg>';
       el.innerHTML = svg;
