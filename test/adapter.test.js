@@ -124,3 +124,34 @@ test('adapter: access key, day values survive a restart, removed consumers disap
     assert.match(adapter.val('info.url'), /\/flow\?key=geheim$/);
     assert.equal(adapter.objects['energie.0.consumers.wallbox.power'], undefined);
 });
+
+test('adapter: wallbox surplus charging writes the current, mode from ioBroker', async t => {
+    const { adapter } = await start(t, {
+        consumers: [],
+        wbPower: 'versicharge.0.power.total',
+        wbCurrent: 'versicharge.0.control.current',
+        wbPlugged: 'versicharge.0.status.plugged',
+        wbPhases: '3',
+        wbMax: 16,
+        wbOnDelay: 0,
+        wbOffDelay: 0,
+    });
+    adapter.add('versicharge.0.power.total', 'W', 0);
+    adapter.change('versicharge.0.power.total', 0);
+    await until(() => adapter.val('wallbox.mode') === 'pv');
+    assert.equal(adapter.objects['energie.0.wallbox.mode'].common.states.fast, 'Schnell');
+    // export 1800 W + battery 1000 W (car first, socMin 0) = 2800 W < 4140 W
+    await until(() => /Wartet/.test(adapter.val('wallbox.status')));
+    assert.equal(adapter.val('wallbox.available'), 2800);
+    adapter.change('shelly.0.em3.Total_Power', -5000);
+    await until(() => (adapter.writes || []).some(w => w.id === 'versicharge.0.control.current' && w.val === 8));
+    assert.equal(adapter.states['versicharge.0.control.current'].ack, false);
+    assert.equal(JSON.parse(adapter.val('live')).wallbox.mode, 'pv');
+    adapter.command('wallbox.mode', 'Schnell');
+    await until(() => adapter.writes.at(-1).val === 16);
+    assert.equal(adapter.states['energie.0.wallbox.mode'].val, 'fast');
+    assert.equal(adapter.states['energie.0.wallbox.mode'].ack, true);
+    adapter.command('wallbox.mode', 'off');
+    await until(() => adapter.writes.at(-1).val === 0);
+    assert.ok(adapter.objects['energie.0.consumers.wallbox.power'], 'wallbox shown as consumer');
+});

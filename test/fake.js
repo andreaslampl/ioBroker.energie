@@ -28,6 +28,20 @@ class FakeAdapter extends EventEmitter {
     async setState(id, val, ack) {
         this.states[this._id(id)] = { val, ack: Boolean(ack) };
     }
+    async getStateAsync(id) {
+        return this.states[this._id(id)] || null;
+    }
+    subscribeStates() {}
+    async setForeignStateAsync(id, val, ack) {
+        this.states[id] = { val, ack: Boolean(ack) };
+        (this.writes = this.writes || []).push({ id, val, ack: Boolean(ack) });
+    }
+    /** a user / SmartView writes an own state (ack false) */
+    command(id, val) {
+        const full = this._id(id);
+        this.states[full] = { val, ack: false };
+        this.emit('stateChange', full, this.states[full]);
+    }
     async extendObject(id, obj) {
         const full = this._id(id);
         const old = this.objects[full] || {};

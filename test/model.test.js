@@ -89,3 +89,55 @@ test('"umgekehrt" on every data point: negative becomes positive', () => {
     const s = snapshot(cfg, id => convert(raw[id], ins[id], 'W'));
     assert.deepEqual([s.pv, s.grid, s.battery, s.house, s.consumers[0].w], [3000, -500, -700, 2000, 800]);
 });
+
+test('Charger: pv starts after the delay, follows the surplus, stops after the delay; battery priority', () => {
+    const { Charger } = require('../lib/model');
+    const cfg = cleanConfig({ gridState: 'grid', batteryState: 'bat', batterySoc: 'soc', wbPower: 'wb.power', wbCurrent: 'wb.current', wbPhases: 3, wbMax: 16, wbOnDelay: 60, wbOffDelay: 300, wbSocMin: 80 });
+    assert.equal(cfg.consumers.at(-1).id, 'wallbox');
+    assert.equal(cfg.consumers.at(-1).icon, 'car');
+    const w = cfg.wallbox;
+    assert.equal(w.min * w.volt * w.phases, 4140);
+    const ch = new Charger(w);
+    // grid > 0 import; battery > 0 charging
+    const snap = (ts, grid, car, battery = 0, soc = 90) => ({ ts, grid, battery, soc, consumers: [{ id: 'wallbox', w: car }] });
+    let r = ch.update(snap(0, -3000, 0), { mode: 'pv', plugged: true });
+    assert.equal(r.amps, 0);
+    assert.match(r.status, /Wartet auf Überschuss \(ab 4,1 kW\)/);
+    r = ch.update(snap(1000, -5000, 0));
+    assert.equal(r.amps, 0);
+    assert.match(r.status, /Startet in 1:00/);
+    r = ch.update(snap(61000, -5000, 0));
+    assert.equal(r.amps, 7, '5000 W / 690 W per A');
+    // car draws 7 A = 4830 W, export drops: available stays
+    r = ch.update(snap(70000, -170, 4830));
+    assert.equal(r.amps, 7);
+    // more sun
+    r = ch.update(snap(80000, -2000, 4830));
+    assert.equal(r.amps, 9);
+    // cloud: below the minimum -> min A until the off delay
+    r = ch.update(snap(90000, 1500, 4830));
+    assert.equal(r.amps, 6);
+    assert.match(r.status, /stoppt in 5:00/);
+    r = ch.update(snap(390000, 1500, 4830));
+    assert.equal(r.amps, 0);
+    assert.match(r.status, /pausiert/);
+    // battery charging counts for the car above socMin, not below
+    r = ch.update(snap(400000, 0, 0, 5000, 90), { mode: 'minpv' });
+    assert.equal(r.amps, 7);
+    r = ch.update(snap(401000, 0, 0, 5000, 50), { mode: 'minpv' });
+    assert.equal(r.amps, 6);
+    assert.equal(r.available, 0);
+    // battery discharging never feeds the car
+    r = ch.update(snap(402000, 0, 4140, -2000, 90), { mode: 'minpv' });
+    assert.equal(r.available, 2140);
+    assert.equal(ch.update(snap(0, 0, 0), { mode: 'fast' }).amps, 16);
+    assert.equal(ch.update(snap(0, 0, 0), { mode: 'off' }).amps, 0);
+    assert.equal(ch.update(snap(0, 0, 0), { mode: 'manual' }).amps, null);
+    assert.equal(ch.update({ ...snap(0, 0, 0), grid: null }, { mode: 'pv' }).status, 'Netz-Messwert fehlt');
+    assert.match(ch.update(snap(0, -9000, 0), { mode: 'pv', plugged: false }).status, /Kein Auto/);
+    // an existing consumer with the same data point becomes the wallbox
+    const c2 = cleanConfig({ consumers: [{ name: 'Auto', state: 'wb.power' }], wbPower: 'wb.power', wbCurrent: 'x' });
+    assert.equal(c2.consumers.length, 1);
+    assert.equal(c2.wallbox.consumer, 'auto');
+    assert.equal(cleanConfig({}).wallbox, null);
+});

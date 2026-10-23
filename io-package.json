@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "news": {
+      "0.4.0": {
+        "en": "Wallbox: PV surplus charging (modes PV, Min+PV, Fast, Off, Manual) - sets the charging current, e.g. of the Siemens VersiCharge (versicharge adapter)",
+        "de": "Wallbox: PV-Überschussladen (Modi PV, Min+PV, Schnell, Aus, Manuell) – stellt den Ladestrom ein, z. B. der Siemens VersiCharge (Adapter versicharge)"
+      },
       "0.3.0": {
         "en": "\"Anordnen\" on the page /flow: drag PV, grid, battery, house and consumers wherever you like; used by VIS-2 and SmartView too",
         "de": "„Anordnen“ auf der Seite /flow: PV, Netz, Batterie, Haus und Verbraucher frei hinziehen; gilt auch für VIS-2 und SmartView"
@@ -119,7 +123,25 @@
     "houseIcon": "house",
     "gridInvert": false,
     "batteryInvert": false,
-    "houseInvert": false
+    "houseInvert": false,
+    "wbName": "Wallbox",
+    "wbIcon": "car",
+    "wbPower": "",
+    "wbUnit": "auto",
+    "wbScale": 1,
+    "wbInvert": false,
+    "wbCurrent": "",
+    "wbEnable": "",
+    "wbPlugged": "",
+    "wbPhases": "3",
+    "wbMin": 6,
+    "wbMax": 16,
+    "wbVolt": 230,
+    "wbMode": "pv",
+    "wbOnDelay": 60,
+    "wbOffDelay": 300,
+    "wbImport": 0,
+    "wbSocMin": 0
   },
   "objects": [],
   "instanceObjects": [

@@ -55,6 +55,35 @@ Auf der Seite `http://<ioBroker>:8101/flow` oben rechts **„Anordnen“** tippe
 und Verbraucher mit Maus oder Finger an die gewünschte Stelle ziehen und **„Speichern“**. „Zurücksetzen“ stellt
 die Standard-Anordnung wieder her. Die Anordnung gilt überall: auf der Seite, in VIS‑2 und in SmartView.
 
+## Wallbox – PV-Überschussladen
+
+Im Reiter **Wallbox** die Datenpunkte der Wallbox eintragen. Für die **Siemens VersiCharge** (Adapter
+[versicharge](https://github.com/andreaslampl/ioBroker.versicharge)):
+
+| Feld | Datenpunkt |
+|---|---|
+| Ladeleistung | `versicharge.0.power.total` |
+| Ladestrom (wird geschrieben) | `versicharge.0.control.current` |
+| Auto angesteckt | `versicharge.0.status.plugged` |
+
+Andere Wallboxen gehen genauso, wenn sie einen Datenpunkt für den Ladestrom in A haben (bei Bedarf
+zusätzlich „Laden ein/aus“).
+
+Den Modus schaltet `energie.0.wallbox.mode` um (SmartView-Kachel „Wallbox“, VIS, Skripte; Text oder Kürzel):
+
+| Modus | Verhalten |
+|---|---|
+| **PV** (`pv`) | nur Überschuss: startet, wenn mindestens Mindeststrom × Phasen × 230 V übrig ist (3-phasig 6 A ≈ 4,1 kW), folgt der Sonne, pausiert nach der Verzögerung ohne Überschuss |
+| **Min+PV** (`minpv`) | immer mindestens Mindeststrom, mehr bei Sonne |
+| **Schnell** (`fast`) | höchster Strom |
+| **Aus** (`off`) | 0 A = Pause |
+| **Manuell** (`manual`) | energie schreibt nichts (z. B. Laden über die App) |
+
+Verfügbar fürs Auto = Einspeisung + was das Auto schon lädt − Entladung des Hausakkus. Lädt der Hausakku,
+zählt seine Ladeleistung fürs Auto mit – außer unter „Hausakku zuerst bis (%)“. Der Strom ändert sich höchstens
+alle 10 Sekunden. `wallbox.status` zeigt, was die Regelung gerade macht (z. B. „Startet in 0:40“,
+„PV-Laden 8 A“, „Zu wenig Überschuss – stoppt in 4:10“). Die Wallbox erscheint im Energiefluss als Verbraucher.
+
 ## Datenpunkte
 
 | Datenpunkt | Inhalt |
@@ -64,6 +93,7 @@ die Standard-Anordnung wieder her. Die Anordnung gilt überall: auf der Seite, i
 | `today.*`, `yesterday.*` | pv, house, import, export, charge, discharge (kWh), autarky, selfUse (%) |
 | `consumers.<name>.power`, `.today` | je Verbraucher |
 | `surplus.power`, `surplus.active` | Überschuss (Einspeisung, optional + Batterieladung) und Signal mit Schwellen/Verzögerung – z. B. für ioBroker.logik |
+| `wallbox.mode` (schreibbar), `wallbox.status`, `wallbox.target`, `wallbox.available` | Wallbox: Modus, was die Regelung macht, vorgegebener Strom (A), verfügbare Leistung (W) |
 | `live` | alle Werte als JSON (für SmartView) |
 
 Die Tageswerte rechnet der Adapter selbst aus den Leistungen (alle 2 Sekunden); dafür braucht es keine
@@ -71,6 +101,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.4.0
+- Wallbox: PV-Überschussladen mit den Modi PV, Min+PV, Schnell, Aus, Manuell (z. B. Siemens VersiCharge über den Adapter versicharge).
 
 ### 0.3.0
 - „Anordnen“: Symbole im Energiefluss frei platzieren (gilt auch für VIS‑2 und SmartView).

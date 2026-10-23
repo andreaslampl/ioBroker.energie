@@ -4,7 +4,7 @@ const os = require('node:os');
 const fs = require('node:fs');
 const path = require('node:path');
 const utils = require('@iobroker/adapter-core');
-const { cleanConfig, inputs, convert, snapshot, Day, History, Surplus, dateKey } = require('./lib/model');
+const { cleanConfig, inputs, convert, snapshot, Day, History, Surplus, Charger, MODES, dateKey } = require('./lib/model');
 const { FlowServer } = require('./lib/server');
 
 const TICK_MS = 2000;
@@ -54,6 +54,7 @@ class Energie extends utils.Adapter {
         this.raw = new Map(); // state id -> raw value
         this.meta = new Map(); // state id -> {unit, exists}
         this.written = new Map(); // own state -> last value written
+        this.wb = { mode: 'pv', current: null, plugged: null, sent: undefined, sentAt: 0, res: null };
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
         this.on('message', this.onMessage.bind(this));
@@ -86,6 +87,9 @@ class Energie extends utils.Adapter {
         if (!this.inputs.length) {
             this.log.warn('No data points configured yet - open the instance settings');
         }
+        if (this.cfg.wallbox) {
+            await this.startWallbox();
+        }
 
         const port = Number(this.config.port) || 8101;
         const key = String(this.config.accessKey || '').trim();
@@ -107,6 +111,85 @@ class Energie extends utils.Adapter {
         await this.tick();
         this.timer = setInterval(() => this.tick().catch(err => this.log.warn(`Update: ${err.message}`)), TICK_MS);
         this.saveTimer = setInterval(() => this.save(), SAVE_MS);
+    }
+
+    // ---------------- wallbox (surplus charging) ----------------
+
+    async startWallbox() {
+        const w = this.cfg.wallbox;
+        this.charger = new Charger(w);
+        const st = await this.getStateAsync('wallbox.mode');
+        this.wb.mode = st && MODES[st.val] ? st.val : w.mode;
+        await this.setState('wallbox.mode', this.wb.mode, true);
+        this.subscribeStates('wallbox.mode');
+        for (const [key, id] of [
+            ['current', w.current],
+            ['plugged', w.plugged],
+        ]) {
+            if (id) {
+                await this.subscribeForeignStatesAsync(id);
+                const s = await this.getForeignStateAsync(id).catch(() => null);
+                this.wbValue(key, s ? s.val : null);
+            }
+        }
+        if (!w.current) {
+            this.log.warn('Wallbox: no data point for the charging current - the wallbox is only shown, not controlled');
+        }
+        this.log.info(`Wallbox ${w.name}: mode ${MODES[this.wb.mode]}, ${w.phases}-phase, ${w.min}-${w.max} A, starts from ${((w.min * w.volt * w.phases) / 1000).toFixed(1)} kW surplus`);
+    }
+
+    wbValue(key, val) {
+        if (key === 'plugged') {
+            this.wb.plugged = val === null || val === undefined ? null : val === true || val === 1 || val === 'true';
+        } else {
+            const n = Number(val);
+            this.wb.current = val === null || val === undefined || !Number.isFinite(n) ? null : n;
+        }
+    }
+
+    /** mode from ioBroker / SmartView: key (pv) or text (PV, Schnell) */
+    async setMode(val) {
+        const v = String(val ?? '').trim().toLowerCase();
+        const mode = Object.keys(MODES).find(k => k === v || MODES[k].toLowerCase() === v);
+        if (!mode) {
+            this.log.warn(`Wallbox: unknown mode "${val}" (${Object.keys(MODES).join(', ')})`);
+            await this.setState('wallbox.mode', this.wb.mode, true);
+            return;
+        }
+        if (mode !== this.wb.mode) {
+            this.log.info(`Wallbox: mode ${MODES[mode]}`);
+        }
+        this.wb.mode = mode;
+        this.wb.sentAt = 0; // a new mode may write at once
+        await this.setState('wallbox.mode', mode, true);
+        await this.tick();
+    }
+
+    async controlWallbox(s) {
+        const w = this.cfg.wallbox;
+        const res = this.charger.update(s, { mode: this.wb.mode, plugged: this.wb.plugged });
+        this.wb.res = res;
+        await this.put('wallbox.status', res.status);
+        await this.put('wallbox.available', res.available);
+        await this.put('wallbox.target', res.amps);
+        if (res.amps === null || !w.current) {
+            this.wb.sent = undefined;
+            return;
+        }
+        const since = s.ts - this.wb.sentAt;
+        const changed = res.amps !== this.wb.sent;
+        // pausing/starting at once, other changes at most every 10 s; repeat when the wallbox shows something else
+        const due = since >= w.minWrite || res.amps === 0 || !this.wb.sent;
+        const drift = this.wb.current !== null && Math.abs(this.wb.current - res.amps) >= 0.5 && since >= 30000;
+        if ((changed && due) || drift) {
+            this.wb.sent = res.amps;
+            this.wb.sentAt = s.ts;
+            this.log.debug(`Wallbox: ${res.amps} A (${res.status}, available ${res.available} W)`);
+            await this.setForeignStateAsync(w.current, res.amps, false);
+            if (w.enable) {
+                await this.setForeignStateAsync(w.enable, res.amps > 0, false);
+            }
+        }
     }
 
     // ---------------- own arrangement of the symbols (positions.json) ----------------
@@ -194,6 +277,20 @@ class Energie extends utils.Adapter {
             write: false,
             name: { en: 'Surplus available (thresholds and delay from the settings)', de: 'Überschuss vorhanden (Schwellen und Verzögerung aus den Einstellungen)' },
         });
+        if (this.cfg.wallbox) {
+            await channel('wallbox', this.cfg.wallbox.name, this.cfg.wallbox.name);
+            await state('wallbox.mode', {
+                type: 'string',
+                role: 'level.mode',
+                read: true,
+                write: true,
+                states: MODES,
+                name: { en: 'Charging mode', de: 'Lademodus' },
+            });
+            await state('wallbox.status', { type: 'string', role: 'text', read: true, write: false, name: { en: 'Charging control', de: 'Laderegelung' } });
+            await state('wallbox.target', { type: 'number', role: 'value.current', unit: 'A', read: true, write: false, name: { en: 'Charging current set', de: 'Vorgegebener Ladestrom' } });
+            await state('wallbox.available', watt('Power available for the car', 'Leistung fürs Auto verfügbar'));
+        }
         await state('live', { type: 'string', role: 'json', read: true, write: false, name: { en: 'Live values (JSON, for SmartView)', de: 'Live-Werte (JSON, für SmartView)' } });
         // consumers: own folder per consumer; old ones are removed
         const ids = new Set(this.cfg.consumers.map(c => c.id));
@@ -234,6 +331,19 @@ class Energie extends utils.Adapter {
         if (this.meta.has(id)) {
             this.raw.set(id, state ? state.val : null);
         }
+        const w = this.cfg && this.cfg.wallbox;
+        if (!w) {
+            return;
+        }
+        if (id === `${this.namespace}.wallbox.mode` && state && !state.ack) {
+            this.setMode(state.val).catch(err => this.log.warn(`Wallbox: ${err.message}`));
+        }
+        if (id === w.current) {
+            this.wbValue('current', state ? state.val : null);
+        }
+        if (id === w.plugged) {
+            this.wbValue('plugged', state ? state.val : null);
+        }
     }
 
     async tick() {
@@ -267,6 +377,9 @@ class Energie extends utils.Adapter {
         }
         await this.put('surplus.power', this.sur.power);
         await this.put('surplus.active', this.sur.active);
+        if (this.charger) {
+            await this.controlWallbox(s);
+        }
         await this.put('info.connection', this.inputs.length > 0 && s.missing.length === 0);
         const live = this.live();
         await this.put('live', JSON.stringify(live));
@@ -289,7 +402,12 @@ class Energie extends utils.Adapter {
     }
 
     live() {
-        return { s: this.last || null, today: this.day ? this.day.summary() : null, surplus: this.sur || null, view: this.cfg.view };
+        const w = this.cfg.wallbox;
+        const r = this.wb.res;
+        const wallbox = w
+            ? { name: w.name, consumer: w.consumer, mode: this.wb.mode, modes: MODES, status: r ? r.status : '', amps: r ? r.amps : null, available: r ? r.available : null, plugged: this.wb.plugged, current: this.wb.current }
+            : null;
+        return { s: this.last || null, today: this.day ? this.day.summary() : null, surplus: this.sur || null, view: this.cfg.view, wallbox };
     }
 
     /** chart data of a day (today when no date) */

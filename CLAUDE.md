@@ -42,6 +42,14 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   frozen while dragging), viewBox computed from all node positions; /flow "Anordnen" bar (not with ?view or
   bg=transparent). SmartView shows the arrangement via `live.view`.
 
+- 0.4.0: owner's wallbox (Siemens VersiCharge 3, 3-phase, VW ID.4) allows only one Modbus client, so far evcc.
+  Owner wanted an own wallbox adapter (ioBroker.versicharge) + surplus charging here + SmartView tile.
+  Config `wb*` -> `cfg.wallbox` (its power becomes consumer `wallbox`, or the consumer with the same data point);
+  model `Charger` (modes off/pv/minpv/fast/manual; available = -grid + car power + battery (only min(0, battery)
+  below `wbSocMin`); pv: onDelay/offDelay, `wbImport` tolerated); main `controlWallbox()` writes `wbCurrent`
+  (ack false) on change, at most every 10 s (pause/start at once), again after 30 s if the wallbox shows another
+  value; `wallbox.mode` (keys or German texts), `live.wallbox`. Not yet tested on the real system.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.
