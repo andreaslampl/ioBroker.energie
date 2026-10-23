@@ -61,6 +61,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
 - 0.5.1: owner's heat pump is the Ochsner (ioBroker.ochsner-web2com), "Wärmeerzeuger Status" 0 = Standby -> `wbHpKind`
   auto|power|status + `wbHpOff` (numbers or texts, matched against the value and its common.states text);
   model `hpRunning(w, val, common)`. Must stay generic (Dimplex and others).
+- Car SOC for "ready by": the VersiCharge (AC) has no SOC register. VW retired the classic VW ID login (2026-06-01);
+  Tibber not available to the owner (Austria). Owner set up the EU Data Act portal request; vw-connect connects again
+  (SOC expected under vw-connect.0.<VIN>.statuseudata.battery_state_report.soc, every 15 min while the car is active).
 
 ## Conventions
 
