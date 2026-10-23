@@ -98,7 +98,8 @@ dann zum Netzbezug und zum Hausverbrauch dazu (Energiefluss, Tageswerte, Regelun
   **pausiert** oder auf den **Mindeststrom** gesenkt (einstellbar) – in allen Modi.
 - **Netzbezug höchstens (kW, inkl. Auto):** Das Auto bekommt nur, was bis zu dieser Grenze übrig ist; reicht es nicht
   für den Mindeststrom, pausiert es und startet erst nach der Start-Verzögerung wieder (nicht bei jedem Wasserkocher).
-- **Fertig bis (optional):** Akkustand des Autos (z. B. aus dem VW-Adapter), Akkugröße, Ziel-% und Uhrzeit. Reicht die
+- **Fertig bis (optional):** Akkustand des Autos (z. B. aus dem VW-Adapter; mit **Faktor**, falls der Wert z. B. in
+  Zehntel-Prozent kommt – `wallbox.carSoc` zeigt das Ergebnis zum Vergleich mit der App), Akkugröße, Ziel-% und Uhrzeit. Reicht die
   Zeit bis dahin mit Mindeststrom gerade noch (plus 15 Minuten Reserve), laden **beide** – das Auto mit Mindeststrom –,
   auch wenn die Wärmepumpe läuft oder die Grenze erreicht ist. `wallbox.urgent` zeigt das an.
 
@@ -122,6 +123,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.5.2
+- Faktor für den Akkustand des Autos, Ergebnis in `wallbox.carSoc`.
 
 ### 0.5.1
 - Wärmepumpe auch als Status-Datenpunkt (aus bei bestimmten Werten, z. B. Ochsner Standby).

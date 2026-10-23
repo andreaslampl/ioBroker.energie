@@ -174,3 +174,18 @@ test('adapter: heat pump power above the threshold pauses the wallbox', async t 
     await until(() => adapter.writes.at(-1).val === 0);
     assert.equal(JSON.parse(adapter.val('live')).wallbox.heatpump, true);
 });
+
+test('adapter: car charge level with factor (EU Data Act reports 212 for 21.2 %)', async t => {
+    const { adapter } = await start(t, {
+        consumers: [],
+        wbPower: 'versicharge.0.power.total',
+        wbCurrent: 'versicharge.0.control.current',
+        wbCarSoc: 'vw-connect.0.VIN.statuseudata.value',
+        wbCarSocScale: 0.1,
+    });
+    adapter.add('vw-connect.0.VIN.statuseudata.value', '', 212);
+    adapter.change('vw-connect.0.VIN.statuseudata.value', 212);
+    await until(() => adapter.val('wallbox.carSoc') === 21.2);
+    adapter.change('vw-connect.0.VIN.statuseudata.value', 503);
+    await until(() => adapter.val('wallbox.carSoc') === 50.3);
+});

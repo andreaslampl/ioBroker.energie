@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "news": {
+      "0.5.2": {
+        "en": "Wallbox: factor for the car's charge level (e.g. 0.1 for EU Data Act values), shown in wallbox.carSoc",
+        "de": "Wallbox: Faktor für den Akkustand des Autos (z. B. 0,1 für Werte aus dem EU Data Act), angezeigt in wallbox.carSoc"
+      },
       "0.5.1": {
         "en": "Heat pump as status data point (off at certain values, e.g. Ochsner Standby), besides on/off and power",
         "de": "Wärmepumpe auch als Status-Datenpunkt (aus bei bestimmten Werten, z. B. Ochsner Standby), neben Ein/Aus und Leistung"
@@ -160,7 +164,8 @@
     "wbTarget": 80,
     "wbReady": "",
     "wbHpKind": "auto",
-    "wbHpOff": "0"
+    "wbHpOff": "0",
+    "wbCarSocScale": 1
   },
   "objects": [],
   "instanceObjects": [

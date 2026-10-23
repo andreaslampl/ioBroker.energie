@@ -157,5 +157,6 @@
   "status (off at certain values)": "Status (aus bei bestimmten Werten)",
   "Off at values": "Aus bei Werten",
   "numbers or texts, separated by ; - e.g. Ochsner \"Wärmeerzeuger Status\": 0;3;8 (Standby, extern gesperrt, Störung)": "Zahlen oder Texte, getrennt mit ; – z. B. Ochsner „Wärmeerzeuger Status“: 0;3;8 (Standby, extern gesperrt, Störung)",
-  "Heat pump (data point)": "Wärmepumpe (Datenpunkt)"
+  "Heat pump (data point)": "Wärmepumpe (Datenpunkt)",
+  "e.g. 0.1 when the car reports 212 for 21.2 % - check energie.0.wallbox.carSoc against the app": "z. B. 0,1, wenn das Auto 212 für 21,2 % meldet – energie.0.wallbox.carSoc mit der App vergleichen"
 }

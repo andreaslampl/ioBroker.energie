@@ -1133,6 +1133,14 @@
           "sm": 6,
           "newLine": true
         },
+        "wbCarSocScale": {
+          "type": "number",
+          "label": "Factor",
+          "help": "e.g. 0.1 when the car reports 212 for 21.2 % - check energie.0.wallbox.carSoc against the app",
+          "default": 1,
+          "xs": 6,
+          "sm": 2
+        },
         "wbCapacity": {
           "type": "number",
           "label": "Car battery (kWh)",

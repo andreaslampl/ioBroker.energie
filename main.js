@@ -153,7 +153,7 @@ class Energie extends utils.Adapter {
             this.wb.hp = run;
         } else if (key === 'carSoc') {
             const n = Number(val);
-            this.wb.carSoc = val === null || val === undefined || val === '' || !Number.isFinite(n) ? null : n;
+            this.wb.carSoc = val === null || val === undefined || val === '' || !Number.isFinite(n) ? null : Math.round(n * this.cfg.wallbox.carSocScale * 10) / 10;
         } else if (key === 'plugged') {
             this.wb.plugged = val === null || val === undefined ? null : val === true || val === 1 || val === 'true';
         } else {
@@ -190,6 +190,9 @@ class Energie extends utils.Adapter {
             }
         }
         await this.put('wallbox.urgent', res.urgent);
+        if (w.carSoc) {
+            await this.put('wallbox.carSoc', this.wb.carSoc);
+        }
         this.wb.res = res;
         await this.put('wallbox.status', res.status);
         await this.put('wallbox.available', res.available);
@@ -312,6 +315,7 @@ class Energie extends utils.Adapter {
             await state('wallbox.status', { type: 'string', role: 'text', read: true, write: false, name: { en: 'Charging control', de: 'Laderegelung' } });
             await state('wallbox.target', { type: 'number', role: 'value.current', unit: 'A', read: true, write: false, name: { en: 'Charging current set', de: 'Vorgegebener Ladestrom' } });
             await state('wallbox.available', watt('Power available for the car', 'Leistung fürs Auto verfügbar'));
+            await state('wallbox.carSoc', { ...pct('Charge level of the car (after the factor)', 'Akkustand des Autos (nach dem Faktor)'), role: 'value.battery' });
             await state('wallbox.urgent', {
                 type: 'boolean',
                 role: 'indicator',

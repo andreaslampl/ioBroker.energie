@@ -63,7 +63,10 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   model `hpRunning(w, val, common)`. Must stay generic (Dimplex and others).
 - Car SOC for "ready by": the VersiCharge (AC) has no SOC register. VW retired the classic VW ID login (2026-06-01);
   Tibber not available to the owner (Austria). Owner set up the EU Data Act portal request; vw-connect connects again
-  (SOC expected under vw-connect.0.<VIN>.statuseudata.battery_state_report.soc, every 15 min while the car is active).
+  (SOC was expected under vw-connect.0.<VIN>.statuseudata.battery_state_report.soc, every 15 min while the car is active).
+  First owner dataset: battery_state_report only had charge_rate_unit; candidates `statuseudata.value` = 212 ("battery
+  level HV battery") and `energy_contents.current_energy_content.physical_value` = 274; app showed 50 % ~2 h later
+  while charging -> not decided yet. 0.5.2: `wbCarSocScale` factor, result in state `wallbox.carSoc`.
 
 ## Conventions
 

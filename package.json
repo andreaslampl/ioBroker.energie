@@ -1,6 +1,6 @@
 {
   "name": "iobroker.energie",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Energy flow for ioBroker: PV, grid, battery, house and consumers from any adapter, with day values, day chart and surplus signal - for SmartView and VIS-2",
   "author": "andreaslampl",
   "license": "MIT",
