@@ -84,6 +84,25 @@ zählt seine Ladeleistung fürs Auto mit – außer unter „Hausakku zuerst bis
 alle 10 Sekunden. `wallbox.status` zeigt, was die Regelung gerade macht (z. B. „Startet in 0:40“,
 „PV-Laden 8 A“, „Zu wenig Überschuss – stoppt in 4:10“). Die Wallbox erscheint im Energiefluss als Verbraucher.
 
+### Wallbox vor dem Zähler des Wechselrichters
+
+Hängt die Wallbox **vor** dem Zähler des Wechselrichters (dann entlädt das Auto den Hausakku nicht), sieht dieser Zähler
+das Laden nicht. Haken **„Wallbox hängt vor dem Zähler des Wechselrichters“** setzen: energie rechnet die Ladeleistung
+dann zum Netzbezug und zum Hausverbrauch dazu (Energiefluss, Tageswerte, Regelung).
+
+### Wärmepumpe und Lastspitzen (Netztarif nach Spitzenleistung)
+
+- **Wärmepumpe läuft:** Datenpunkt true/false oder ihre Leistung (läuft ab x W). Solange sie läuft, wird das Auto
+  **pausiert** oder auf den **Mindeststrom** gesenkt (einstellbar) – in allen Modi.
+- **Netzbezug höchstens (kW, inkl. Auto):** Das Auto bekommt nur, was bis zu dieser Grenze übrig ist; reicht es nicht
+  für den Mindeststrom, pausiert es und startet erst nach der Start-Verzögerung wieder (nicht bei jedem Wasserkocher).
+- **Fertig bis (optional):** Akkustand des Autos (z. B. aus dem VW-Adapter), Akkugröße, Ziel-% und Uhrzeit. Reicht die
+  Zeit bis dahin mit Mindeststrom gerade noch (plus 15 Minuten Reserve), laden **beide** – das Auto mit Mindeststrom –,
+  auch wenn die Wärmepumpe läuft oder die Grenze erreicht ist. `wallbox.urgent` zeigt das an.
+
+Beispiel ID.4 (77 kWh), Ziel 80 %, fertig um 07:00, Akku 20 %: es fehlen ca. 46 kWh; mit 6 A × 3 Phasen (≈ 3,7 kW
+im Auto) sind das ca. 12 Stunden – ab ca. 18:45 lädt das Auto dann trotz Wärmepumpe mit Mindeststrom.
+
 ## Datenpunkte
 
 | Datenpunkt | Inhalt |
@@ -93,7 +112,7 @@ alle 10 Sekunden. `wallbox.status` zeigt, was die Regelung gerade macht (z. B. �
 | `today.*`, `yesterday.*` | pv, house, import, export, charge, discharge (kWh), autarky, selfUse (%) |
 | `consumers.<name>.power`, `.today` | je Verbraucher |
 | `surplus.power`, `surplus.active` | Überschuss (Einspeisung, optional + Batterieladung) und Signal mit Schwellen/Verzögerung – z. B. für ioBroker.logik |
-| `wallbox.mode` (schreibbar), `wallbox.status`, `wallbox.target`, `wallbox.available` | Wallbox: Modus, was die Regelung macht, vorgegebener Strom (A), verfügbare Leistung (W) |
+| `wallbox.mode` (schreibbar), `wallbox.status`, `wallbox.target`, `wallbox.available`, `wallbox.urgent` | Wallbox: Modus, was die Regelung macht, vorgegebener Strom (A), verfügbare Leistung (W), „würde nicht rechtzeitig voll“ |
 | `live` | alle Werte als JSON (für SmartView) |
 
 Die Tageswerte rechnet der Adapter selbst aus den Leistungen (alle 2 Sekunden); dafür braucht es keine
@@ -101,6 +120,10 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.5.0
+- Wallbox: Wärmepumpe hat Vorrang (Pause oder Mindeststrom), Grenze für den Netzbezug inkl. Auto, „Fertig bis“ mit dem Akkustand des Autos.
+- Wallbox vor dem Zähler des Wechselrichters wird zu Netzbezug und Hausverbrauch gerechnet.
 
 ### 0.4.0
 - Wallbox: PV-Überschussladen mit den Modi PV, Min+PV, Schnell, Aus, Manuell (z. B. Siemens VersiCharge über den Adapter versicharge).

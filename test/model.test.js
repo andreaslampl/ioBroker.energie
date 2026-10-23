@@ -141,3 +141,50 @@ test('Charger: pv starts after the delay, follows the surplus, stops after the d
     assert.equal(c2.wallbox.consumer, 'auto');
     assert.equal(cleanConfig({}).wallbox, null);
 });
+
+test('Charger: heat pump first, import limit, ready by; wallbox outside the meter', () => {
+    const { Charger } = require('../lib/model');
+    const base = { gridState: 'grid', wbPower: 'wb.power', wbCurrent: 'wb.current', wbPhases: 3, wbMax: 16, wbOnDelay: 60 };
+    // wallbox before the inverter's meter: grid and house get the car's power
+    const cfgOut = cleanConfig({ ...base, pvState: 'pv', wbOutside: true });
+    const vals = { pv: 2000, grid: -500, 'wb.power': 4140 };
+    const s = snapshot(cfgOut, id => vals[id] ?? null, 0);
+    assert.equal(s.grid, 3640, 'meter shows 500 W export, the car draws 4140 W -> 3640 W import');
+    assert.equal(s.house, 5640, 'PV 2000 W + import 3640 W');
+
+    const snap = (ts, grid, car) => ({ ts, grid, battery: null, soc: null, consumers: [{ id: 'wallbox', w: car }] });
+    // heat pump: pause (default) / minimum current
+    let ch = new Charger(cleanConfig({ ...base, wbHp: 'hp' }).wallbox);
+    let r = ch.update(snap(0, 0, 0), { mode: 'fast', heatpump: true });
+    assert.equal(r.amps, 0);
+    assert.equal(r.status, 'Pause – Wärmepumpe läuft');
+    assert.equal(ch.update(snap(0, 0, 0), { mode: 'fast', heatpump: false }).amps, 16);
+    ch = new Charger(cleanConfig({ ...base, wbHp: 'hp', wbHpAction: 'min' }).wallbox);
+    assert.equal(ch.update(snap(0, 0, 0), { mode: 'fast', heatpump: true }).amps, 6);
+
+    // ready by 07:00, 80 %: at 20 % 46 kWh are missing, ~12 h at 6 A -> urgent at 21:00, not at 12:00
+    const at = h => new Date(2026, 9, 23, h, 0, 0).getTime();
+    ch = new Charger(cleanConfig({ ...base, wbHp: 'hp', wbCarSoc: 'soc', wbTarget: 80, wbCapacity: 77, wbReady: '07:00' }).wallbox);
+    r = ch.update(snap(at(12), 0, 0), { mode: 'fast', heatpump: true, carSoc: 20 });
+    assert.equal(r.urgent, false);
+    assert.equal(r.amps, 0);
+    r = ch.update(snap(at(21), 0, 0), { mode: 'fast', heatpump: true, carSoc: 20 });
+    assert.equal(r.urgent, true);
+    assert.equal(r.amps, 6);
+    assert.match(r.status, /Wärmepumpe läuft – Auto mit 6 A \(sonst bis 07:00 nicht 80 %\)/);
+    assert.equal(ch.update(snap(at(21), 0, 0), { mode: 'fast', heatpump: true, carSoc: 85 }).urgent, false, 'already full enough');
+    assert.equal(ch.update(snap(at(21), 0, 0), { mode: 'fast', heatpump: true, carSoc: null }).urgent, false, 'no charge level known');
+
+    // import limit 8 kW incl. car: house draws 3 kW -> 5 kW left = 7 A; house 5 kW -> 3 kW < 6 A -> pause, restart after the delay
+    ch = new Charger(cleanConfig({ ...base, wbPeak: 8 }).wallbox);
+    r = ch.update(snap(0, 3000 + 11040, 11040), { mode: 'fast' });
+    assert.equal(r.amps, 7);
+    assert.match(r.status, /7 A – Bezugsgrenze 8,0 kW/);
+    r = ch.update(snap(1000, 5000 + 4830, 4830), { mode: 'fast' });
+    assert.equal(r.amps, 0);
+    assert.match(r.status, /Pause – Bezugsgrenze 8,0 kW erreicht/);
+    r = ch.update(snap(2000, 1000, 0), { mode: 'fast' });
+    assert.equal(r.amps, 0);
+    assert.match(r.status, /startet wieder in 0:59/);
+    assert.equal(ch.update(snap(62000, 1000, 0), { mode: 'fast' }).amps, 10);
+});

@@ -50,6 +50,15 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   (ack false) on change, at most every 10 s (pause/start at once), again after 30 s if the wallbox shows another
   value; `wallbox.mode` (keys or German texts), `live.wallbox`. Not yet tested on the real system.
 
+- 0.5.0: owner's grid tariff will charge by power peaks; the wallbox is before the inverter's meter (so the car does
+  not drain the house battery) and was missing from house consumption. `wbOutside` -> snapshot adds the wallbox
+  consumer's power to grid (and to a measured house; a computed house includes it via grid). Charger `update()` =
+  `base()` (surplus logic as before) then limits: heat pump (`wbHp` bool or power > `wbHpOn` W, kW by object unit;
+  `wbHpAction` pause|min|none), import limit `wbPeak` kW incl. car (amps = (peak - (grid - car)) / perAmp; below
+  min -> pause, restart only after onDelay via `peakAt`), `urgent()` (car SOC `wbCarSoc`, `wbCapacity`, `wbTarget`,
+  `wbReady` HH:MM; minimum-current time at 90 % efficiency + 15 min >= time left) overrides both with min current.
+  `wallbox.urgent` state, `live.wallbox.heatpump/urgent`. Not yet tested on the real system.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

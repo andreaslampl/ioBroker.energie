@@ -899,6 +899,13 @@
           "sm": 6,
           "newLine": true
         },
+        "wbOutside": {
+          "type": "checkbox",
+          "label": "Wallbox is connected before the inverter's meter (not included in grid / house values)",
+          "help": "then energie adds the wallbox to grid import and house consumption",
+          "xs": 12,
+          "newLine": true
+        },
         "wbHeader": {
           "type": "header",
           "text": "Charging",
@@ -1018,6 +1025,106 @@
           "xs": 12,
           "sm": 4,
           "newLine": true
+        },
+        "peakHeader": {
+          "type": "header",
+          "text": "Heat pump and power peaks",
+          "size": 4
+        },
+        "peakHelp": {
+          "type": "staticText",
+          "text": "For grid tariffs that charge the highest power: the heat pump goes first, and the grid import incl. the car can be limited. If the car would otherwise not reach the target by the ready time, both run - the car with the minimum current.",
+          "xs": 12
+        },
+        "wbHp": {
+          "type": "objectId",
+          "label": "Heat pump runs (true/false or power)",
+          "help": "empty = off",
+          "xs": 12,
+          "sm": 6,
+          "newLine": true
+        },
+        "wbHpOn": {
+          "type": "number",
+          "label": "Runs above (W)",
+          "help": "only for a power data point",
+          "default": 200,
+          "min": 0,
+          "max": 50000,
+          "xs": 6,
+          "sm": 3
+        },
+        "wbHpAction": {
+          "type": "select",
+          "label": "While it runs",
+          "options": [
+            {
+              "value": "pause",
+              "label": "pause the car"
+            },
+            {
+              "value": "min",
+              "label": "car with minimum current"
+            },
+            {
+              "value": "none",
+              "label": "nothing"
+            }
+          ],
+          "default": "pause",
+          "xs": 6,
+          "sm": 3
+        },
+        "wbPeak": {
+          "type": "number",
+          "label": "Grid import at most (kW, incl. car)",
+          "help": "0 = no limit",
+          "default": 0,
+          "min": 0,
+          "max": 100,
+          "step": 0.1,
+          "xs": 12,
+          "sm": 4,
+          "newLine": true
+        },
+        "readyHeader": {
+          "type": "header",
+          "text": "Ready by (optional)",
+          "size": 4
+        },
+        "wbCarSoc": {
+          "type": "objectId",
+          "label": "Charge level of the car (%)",
+          "help": "e.g. from the VW adapter; empty = heat pump and limit always win",
+          "xs": 12,
+          "sm": 6,
+          "newLine": true
+        },
+        "wbCapacity": {
+          "type": "number",
+          "label": "Car battery (kWh)",
+          "default": 77,
+          "min": 1,
+          "max": 200,
+          "xs": 6,
+          "sm": 2
+        },
+        "wbTarget": {
+          "type": "number",
+          "label": "Target (%)",
+          "default": 80,
+          "min": 1,
+          "max": 100,
+          "xs": 6,
+          "sm": 2
+        },
+        "wbReady": {
+          "type": "text",
+          "label": "Ready by (HH:MM)",
+          "help": "e.g. 07:00, empty = off",
+          "default": "",
+          "xs": 6,
+          "sm": 2
         }
       }
     },

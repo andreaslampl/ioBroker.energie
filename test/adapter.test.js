@@ -155,3 +155,22 @@ test('adapter: wallbox surplus charging writes the current, mode from ioBroker',
     await until(() => adapter.writes.at(-1).val === 0);
     assert.ok(adapter.objects['energie.0.consumers.wallbox.power'], 'wallbox shown as consumer');
 });
+
+test('adapter: heat pump power above the threshold pauses the wallbox', async t => {
+    const { adapter } = await start(t, {
+        consumers: [],
+        wbPower: 'versicharge.0.power.total',
+        wbCurrent: 'versicharge.0.control.current',
+        wbHp: 'modbus.0.wp_leistung',
+        wbHpOn: 300,
+        wbMode: 'fast',
+    });
+    adapter.add('versicharge.0.power.total', 'W', 0);
+    adapter.add('modbus.0.wp_leistung', 'W', 100);
+    adapter.change('modbus.0.wp_leistung', 100);
+    await until(() => (adapter.writes || []).some(w => w.id === 'versicharge.0.control.current' && w.val === 16));
+    adapter.change('modbus.0.wp_leistung', 2400);
+    await until(() => adapter.val('wallbox.status') === 'Pause – Wärmepumpe läuft');
+    await until(() => adapter.writes.at(-1).val === 0);
+    assert.equal(JSON.parse(adapter.val('live')).wallbox.heatpump, true);
+});

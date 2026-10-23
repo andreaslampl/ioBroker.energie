@@ -54,7 +54,7 @@ class Energie extends utils.Adapter {
         this.raw = new Map(); // state id -> raw value
         this.meta = new Map(); // state id -> {unit, exists}
         this.written = new Map(); // own state -> last value written
-        this.wb = { mode: 'pv', current: null, plugged: null, sent: undefined, sentAt: 0, res: null };
+        this.wb = { mode: 'pv', current: null, plugged: null, sent: undefined, sentAt: 0, res: null, hp: null, carSoc: null, urgent: false };
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
         this.on('message', this.onMessage.bind(this));
@@ -125,8 +125,14 @@ class Energie extends utils.Adapter {
         for (const [key, id] of [
             ['current', w.current],
             ['plugged', w.plugged],
+            ['hp', w.hp],
+            ['carSoc', w.carSoc],
         ]) {
             if (id) {
+                if (key === 'hp') {
+                    const obj = await this.getForeignObjectAsync(id).catch(() => null);
+                    this.wb.hpUnit = (obj && obj.common && obj.common.unit) || '';
+                }
                 await this.subscribeForeignStatesAsync(id);
                 const s = await this.getForeignStateAsync(id).catch(() => null);
                 this.wbValue(key, s ? s.val : null);
@@ -139,7 +145,14 @@ class Energie extends utils.Adapter {
     }
 
     wbValue(key, val) {
-        if (key === 'plugged') {
+        if (key === 'hp') {
+            // heat pump runs: true, or a power above the threshold (W, kW from the object's unit)
+            const n = typeof val === 'boolean' ? null : convert(val, { unit: 'auto', scale: 1 }, this.wb.hpUnit);
+            this.wb.hp = val === null || val === undefined ? null : typeof val === 'boolean' ? val : n !== null && n > this.cfg.wallbox.hpOn;
+        } else if (key === 'carSoc') {
+            const n = Number(val);
+            this.wb.carSoc = val === null || val === undefined || val === '' || !Number.isFinite(n) ? null : n;
+        } else if (key === 'plugged') {
             this.wb.plugged = val === null || val === undefined ? null : val === true || val === 1 || val === 'true';
         } else {
             const n = Number(val);
@@ -167,7 +180,14 @@ class Energie extends utils.Adapter {
 
     async controlWallbox(s) {
         const w = this.cfg.wallbox;
-        const res = this.charger.update(s, { mode: this.wb.mode, plugged: this.wb.plugged });
+        const res = this.charger.update(s, { mode: this.wb.mode, plugged: this.wb.plugged, heatpump: this.wb.hp, carSoc: this.wb.carSoc });
+        if (res.urgent !== this.wb.urgent) {
+            this.wb.urgent = res.urgent;
+            if (res.urgent) {
+                this.log.info(`Wallbox: car at ${this.wb.carSoc} % would not reach ${w.target} % by ${w.ready} - charging with at least ${w.min} A despite heat pump / import limit`);
+            }
+        }
+        await this.put('wallbox.urgent', res.urgent);
         this.wb.res = res;
         await this.put('wallbox.status', res.status);
         await this.put('wallbox.available', res.available);
@@ -290,6 +310,13 @@ class Energie extends utils.Adapter {
             await state('wallbox.status', { type: 'string', role: 'text', read: true, write: false, name: { en: 'Charging control', de: 'Laderegelung' } });
             await state('wallbox.target', { type: 'number', role: 'value.current', unit: 'A', read: true, write: false, name: { en: 'Charging current set', de: 'Vorgegebener Ladestrom' } });
             await state('wallbox.available', watt('Power available for the car', 'Leistung fürs Auto verfügbar'));
+            await state('wallbox.urgent', {
+                type: 'boolean',
+                role: 'indicator',
+                read: true,
+                write: false,
+                name: { en: 'Car would not be ready in time - charges despite heat pump / limit', de: 'Auto würde nicht rechtzeitig voll – lädt trotz Wärmepumpe / Grenze' },
+            });
         }
         await state('live', { type: 'string', role: 'json', read: true, write: false, name: { en: 'Live values (JSON, for SmartView)', de: 'Live-Werte (JSON, für SmartView)' } });
         // consumers: own folder per consumer; old ones are removed
@@ -343,6 +370,12 @@ class Energie extends utils.Adapter {
         }
         if (id === w.plugged) {
             this.wbValue('plugged', state ? state.val : null);
+        }
+        if (id === w.hp) {
+            this.wbValue('hp', state ? state.val : null);
+        }
+        if (id === w.carSoc) {
+            this.wbValue('carSoc', state ? state.val : null);
         }
     }
 
@@ -405,7 +438,7 @@ class Energie extends utils.Adapter {
         const w = this.cfg.wallbox;
         const r = this.wb.res;
         const wallbox = w
-            ? { name: w.name, consumer: w.consumer, mode: this.wb.mode, modes: MODES, status: r ? r.status : '', amps: r ? r.amps : null, available: r ? r.available : null, plugged: this.wb.plugged, current: this.wb.current }
+            ? { name: w.name, consumer: w.consumer, heatpump: this.wb.hp, urgent: Boolean(r && r.urgent), mode: this.wb.mode, modes: MODES, status: r ? r.status : '', amps: r ? r.amps : null, available: r ? r.available : null, plugged: this.wb.plugged, current: this.wb.current }
             : null;
         return { s: this.last || null, today: this.day ? this.day.summary() : null, surplus: this.sur || null, view: this.cfg.view, wallbox };
     }
