@@ -101,7 +101,7 @@ dann zum Netzbezug und zum Hausverbrauch dazu (Energiefluss, Tageswerte, Regelun
   auch wenn die Wärmepumpe läuft oder die Grenze erreicht ist. `wallbox.urgent` zeigt das an.
 
 Beispiel ID.4 (77 kWh), Ziel 80 %, fertig um 07:00, Akku 20 %: es fehlen ca. 46 kWh; mit 6 A × 3 Phasen (≈ 3,7 kW
-im Auto) sind das ca. 12 Stunden – ab ca. 18:45 lädt das Auto dann trotz Wärmepumpe mit Mindeststrom.
+im Auto) sind das ca. 12½ Stunden – ab ca. 18:20 lädt das Auto dann trotz Wärmepumpe mit Mindeststrom.
 
 ## Datenpunkte
 
