@@ -150,5 +150,12 @@
   "Car battery (kWh)": "Akku des Autos (kWh)",
   "Target (%)": "Ziel (%)",
   "Ready by (HH:MM)": "Fertig um (HH:MM)",
-  "e.g. 07:00, empty = off": "z. B. 07:00, leer = aus"
+  "e.g. 07:00, empty = off": "z. B. 07:00, leer = aus",
+  "Kind of data point": "Art des Datenpunkts",
+  "on/off (true/false)": "Ein/Aus (true/false)",
+  "power": "Leistung",
+  "status (off at certain values)": "Status (aus bei bestimmten Werten)",
+  "Off at values": "Aus bei Werten",
+  "numbers or texts, separated by ; - e.g. Ochsner \"Wärmeerzeuger Status\": 0;3;8 (Standby, extern gesperrt, Störung)": "Zahlen oder Texte, getrennt mit ; – z. B. Ochsner „Wärmeerzeuger Status“: 0;3;8 (Standby, extern gesperrt, Störung)",
+  "Heat pump (data point)": "Wärmepumpe (Datenpunkt)"
 }

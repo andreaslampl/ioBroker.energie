@@ -1038,8 +1038,39 @@
         },
         "wbHp": {
           "type": "objectId",
-          "label": "Heat pump runs (true/false or power)",
+          "label": "Heat pump (data point)",
           "help": "empty = off",
+          "xs": 12,
+          "sm": 6,
+          "newLine": true
+        },
+        "wbHpKind": {
+          "type": "select",
+          "label": "Kind of data point",
+          "options": [
+            {
+              "value": "auto",
+              "label": "on/off (true/false)"
+            },
+            {
+              "value": "power",
+              "label": "power"
+            },
+            {
+              "value": "status",
+              "label": "status (off at certain values)"
+            }
+          ],
+          "default": "auto",
+          "xs": 12,
+          "sm": 3
+        },
+        "wbHpOff": {
+          "type": "text",
+          "label": "Off at values",
+          "help": "numbers or texts, separated by ; - e.g. Ochsner \"Wärmeerzeuger Status\": 0;3;8 (Standby, extern gesperrt, Störung)",
+          "default": "0",
+          "hidden": "data.wbHpKind !== 'status'",
           "xs": 12,
           "sm": 6,
           "newLine": true
@@ -1052,7 +1083,9 @@
           "min": 0,
           "max": 50000,
           "xs": 6,
-          "sm": 3
+          "sm": 3,
+          "hidden": "data.wbHpKind === 'status'",
+          "newLine": true
         },
         "wbHpAction": {
           "type": "select",

@@ -58,6 +58,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   min -> pause, restart only after onDelay via `peakAt`), `urgent()` (car SOC `wbCarSoc`, `wbCapacity`, `wbTarget`,
   `wbReady` HH:MM; minimum-current time at 90 % efficiency + 15 min >= time left) overrides both with min current.
   `wallbox.urgent` state, `live.wallbox.heatpump/urgent`. Not yet tested on the real system.
+- 0.5.1: owner's heat pump is the Ochsner (ioBroker.ochsner-web2com), "Wärmeerzeuger Status" 0 = Standby -> `wbHpKind`
+  auto|power|status + `wbHpOff` (numbers or texts, matched against the value and its common.states text);
+  model `hpRunning(w, val, common)`. Must stay generic (Dimplex and others).
 
 ## Conventions
 

@@ -188,3 +188,29 @@ test('Charger: heat pump first, import limit, ready by; wallbox outside the mete
     assert.match(r.status, /startet wieder in 0:59/);
     assert.equal(ch.update(snap(62000, 1000, 0), { mode: 'fast' }).amps, 10);
 });
+
+test('hpRunning: on/off, power, status with off values (Ochsner, Dimplex texts)', () => {
+    const { hpRunning } = require('../lib/model');
+    const w = o => cleanConfig({ wbCurrent: 'x', ...o }).wallbox;
+    assert.equal(hpRunning(w({}), true), true);
+    assert.equal(hpRunning(w({}), false), false);
+    assert.equal(hpRunning(w({}), 'true'), true);
+    assert.equal(hpRunning(w({ wbHpOn: 300 }), 120, { unit: 'W' }), false);
+    assert.equal(hpRunning(w({ wbHpOn: 300 }), 2.1, { unit: 'kW' }), true);
+    assert.equal(hpRunning(w({}), null), null);
+    // Ochsner "Wärmeerzeuger Status": 0 = Standby, 3 = extern gesperrt, 8 = Störung
+    const states = { 0: 'Standby', 1: 'Heizbetrieb', 3: 'Extern gesperrt', 8: 'Störung' };
+    const och = w({ wbHpKind: 'status', wbHpOff: '0; 3; 8' });
+    assert.equal(hpRunning(och, 0, { states }), false);
+    assert.equal(hpRunning(och, 1, { states }), true);
+    assert.equal(hpRunning(och, 8, { states }), false);
+    assert.equal(hpRunning(och, '1', { states }), true);
+    // by text, also for a text data point
+    const txt = w({ wbHpKind: 'status', wbHpOff: 'Standby, Störung' });
+    assert.equal(hpRunning(txt, 0, { states }), false);
+    assert.equal(hpRunning(txt, 1, { states }), true);
+    assert.equal(hpRunning(txt, 'standby'), false);
+    assert.equal(hpRunning(txt, 'Heizen'), true);
+    // default off value 0
+    assert.deepEqual(w({ wbHpKind: 'status' }).hpOff, ['0']);
+});

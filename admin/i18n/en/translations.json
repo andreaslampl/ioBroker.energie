@@ -150,5 +150,12 @@
   "Car battery (kWh)": "Car battery (kWh)",
   "Target (%)": "Target (%)",
   "Ready by (HH:MM)": "Ready by (HH:MM)",
-  "e.g. 07:00, empty = off": "e.g. 07:00, empty = off"
+  "e.g. 07:00, empty = off": "e.g. 07:00, empty = off",
+  "Kind of data point": "Kind of data point",
+  "on/off (true/false)": "on/off (true/false)",
+  "power": "power",
+  "status (off at certain values)": "status (off at certain values)",
+  "Off at values": "Off at values",
+  "numbers or texts, separated by ; - e.g. Ochsner \"Wärmeerzeuger Status\": 0;3;8 (Standby, extern gesperrt, Störung)": "numbers or texts, separated by ; - e.g. Ochsner \"Wärmeerzeuger Status\": 0;3;8 (Standby, extern gesperrt, Störung)",
+  "Heat pump (data point)": "Heat pump (data point)"
 }

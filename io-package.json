@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "news": {
+      "0.5.1": {
+        "en": "Heat pump as status data point (off at certain values, e.g. Ochsner Standby), besides on/off and power",
+        "de": "Wärmepumpe auch als Status-Datenpunkt (aus bei bestimmten Werten, z. B. Ochsner Standby), neben Ein/Aus und Leistung"
+      },
       "0.5.0": {
         "en": "Wallbox: heat pump first (pause or minimum current while it runs), grid import limit incl. the car, 'ready by' with the car's charge level; wallbox before the inverter's meter is added to grid and house",
         "de": "Wallbox: Wärmepumpe hat Vorrang (Pause oder Mindeststrom, solange sie läuft), Grenze für den Netzbezug inkl. Auto, „Fertig bis“ mit dem Akkustand des Autos; Wallbox vor dem Zähler des Wechselrichters wird zu Netz und Haus gerechnet"
@@ -154,7 +158,9 @@
     "wbCarSoc": "",
     "wbCapacity": 77,
     "wbTarget": 80,
-    "wbReady": ""
+    "wbReady": "",
+    "wbHpKind": "auto",
+    "wbHpOff": "0"
   },
   "objects": [],
   "instanceObjects": [

@@ -92,7 +92,9 @@ dann zum Netzbezug und zum Hausverbrauch dazu (Energiefluss, Tageswerte, Regelun
 
 ### Wärmepumpe und Lastspitzen (Netztarif nach Spitzenleistung)
 
-- **Wärmepumpe läuft:** Datenpunkt true/false oder ihre Leistung (läuft ab x W). Solange sie läuft, wird das Auto
+- **Wärmepumpe:** Datenpunkt mit der Art **Ein/Aus** (true/false), **Leistung** (läuft ab x W) oder **Status** (aus bei
+  bestimmten Werten, Zahlen oder Texte – z. B. Ochsner „Wärmeerzeuger Status“ `0;3;8` = Standby, extern gesperrt,
+  Störung; bei Dimplex und anderen den Betriebsstatus mit seinen Aus-Werten). Solange sie läuft, wird das Auto
   **pausiert** oder auf den **Mindeststrom** gesenkt (einstellbar) – in allen Modi.
 - **Netzbezug höchstens (kW, inkl. Auto):** Das Auto bekommt nur, was bis zu dieser Grenze übrig ist; reicht es nicht
   für den Mindeststrom, pausiert es und startet erst nach der Start-Verzögerung wieder (nicht bei jedem Wasserkocher).
@@ -120,6 +122,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.5.1
+- Wärmepumpe auch als Status-Datenpunkt (aus bei bestimmten Werten, z. B. Ochsner Standby).
 
 ### 0.5.0
 - Wallbox: Wärmepumpe hat Vorrang (Pause oder Mindeststrom), Grenze für den Netzbezug inkl. Auto, „Fertig bis“ mit dem Akkustand des Autos.

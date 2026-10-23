@@ -4,7 +4,7 @@ const os = require('node:os');
 const fs = require('node:fs');
 const path = require('node:path');
 const utils = require('@iobroker/adapter-core');
-const { cleanConfig, inputs, convert, snapshot, Day, History, Surplus, Charger, MODES, dateKey } = require('./lib/model');
+const { cleanConfig, inputs, convert, snapshot, Day, History, Surplus, Charger, MODES, hpRunning, dateKey } = require('./lib/model');
 const { FlowServer } = require('./lib/server');
 
 const TICK_MS = 2000;
@@ -131,7 +131,7 @@ class Energie extends utils.Adapter {
             if (id) {
                 if (key === 'hp') {
                     const obj = await this.getForeignObjectAsync(id).catch(() => null);
-                    this.wb.hpUnit = (obj && obj.common && obj.common.unit) || '';
+                    this.wb.hpObj = (obj && obj.common) || {};
                 }
                 await this.subscribeForeignStatesAsync(id);
                 const s = await this.getForeignStateAsync(id).catch(() => null);
@@ -146,9 +146,11 @@ class Energie extends utils.Adapter {
 
     wbValue(key, val) {
         if (key === 'hp') {
-            // heat pump runs: true, or a power above the threshold (W, kW from the object's unit)
-            const n = typeof val === 'boolean' ? null : convert(val, { unit: 'auto', scale: 1 }, this.wb.hpUnit);
-            this.wb.hp = val === null || val === undefined ? null : typeof val === 'boolean' ? val : n !== null && n > this.cfg.wallbox.hpOn;
+            const run = hpRunning(this.cfg.wallbox, val, this.wb.hpObj);
+            if (run !== this.wb.hp && run !== null) {
+                this.log.info(`Wallbox: heat pump ${run ? 'runs' : 'off'} (${val})`);
+            }
+            this.wb.hp = run;
         } else if (key === 'carSoc') {
             const n = Number(val);
             this.wb.carSoc = val === null || val === undefined || val === '' || !Number.isFinite(n) ? null : n;
