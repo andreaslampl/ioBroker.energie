@@ -67,6 +67,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   First owner dataset: battery_state_report only had charge_rate_unit; candidates `statuseudata.value` = 212 ("battery
   level HV battery") and `energy_contents.current_energy_content.physical_value` = 274; app showed 50 % ~2 h later
   while charging -> not decided yet. 0.5.2: `wbCarSocScale` factor, result in state `wallbox.carSoc`.
+  Resolved: owner uses `vw-connect.0.<VIN>.statuseudata.battery_level_HV.value` (later read 39 = the app's %), factor 1.
+  Owner's heat pump setting: Ochsner "Wärmeerzeuger Status", kind status, off at 0;3;8 (first entered 1 = Heizbetrieb
+  as if it were "runs at" - the label "Aus bei Werten" was misread).
 
 - 0.6.0: owner asked: consumers' source in the flow, adjustable animation speed, house colored by source. Consumers
   and wallbox `from` house|pv|grid|battery (display only; snapshot passes it; render: non-house sources drawn with
