@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "news": {
+      "0.7.1": {
+        "en": "Wallbox: new choice while the heat pump runs - the car gets what is left up to the import limit; help text for the choices",
+        "de": "Wallbox: neue Auswahl, solange die Wärmepumpe läuft – das Auto bekommt den Rest bis zur Bezugsgrenze; Hilfetext zu den Möglichkeiten"
+      },
       "0.7.0": {
         "en": "Wallbox: clearer names; heat pump priority and import limit each with an on/off checkbox and switchable while running (wallbox.hpPriority, wallbox.peakLimit)",
         "de": "Wallbox: klarere Bezeichnungen; Wärmepumpen-Vorrang und Bezugsgrenze je mit Haken ein/aus und im Betrieb umschaltbar (wallbox.hpPriority, wallbox.peakLimit)"

@@ -89,6 +89,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   reworded; runtime states `wallbox.hpPriority` (bool) / `wallbox.peakLimit` (kW, 0 = off) set from the settings at
   every start, passed to `Charger.update()` as `hpRule` / `peak` (W) overriding the config.
 
+- 0.7.1: owner wanted the pause choice explained / an option where the car keeps the rest up to the limit ->
+  `wbHpAction` 'limit' (heat pump rule does nothing itself, the import limit decides), help text on the select.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

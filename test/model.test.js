@@ -277,3 +277,12 @@ test('Charger: heat pump rule and import limit can be switched off (settings and
     assert.equal(ch.update(snap(3000 + 11040, 11040), { mode: 'fast' }).amps, 7);
     assert.equal(ch.update(snap(3000 + 11040, 11040), { mode: 'fast', peak: 0 }).amps, 16, 'limit 0 = off');
 });
+
+test('Charger: heat pump runs, action "rest up to the limit" - the car follows the import limit', () => {
+    const { Charger } = require('../lib/model');
+    const ch = new Charger(cleanConfig({ gridState: 'grid', wbPower: 'wb', wbCurrent: 'x', wbMax: 16, wbHp: 'hp', wbHpAction: 'limit', wbPeak: 12 }).wallbox);
+    // house + heat pump 4 kW, car 11 kW -> 12 - 0.5 - 4 = 7.5 kW -> 10 A instead of a pause
+    const r = ch.update({ ts: 0, grid: 4000 + 11040, battery: null, soc: null, consumers: [{ id: 'wallbox', w: 11040 }] }, { mode: 'fast', heatpump: true });
+    assert.equal(r.amps, 10);
+    assert.match(r.status, /Bezugsgrenze 12,0 kW/);
+});

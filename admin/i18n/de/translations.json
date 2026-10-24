@@ -187,5 +187,7 @@
   "Limit the grid import (power-based tariff)": "Netzbezug begrenzen (Leistungstarif)",
   "switchable while running: energie.0.wallbox.peakLimit (kW, 0 = off)": "im Betrieb änderbar: energie.0.wallbox.peakLimit (kW, 0 = aus)",
   "At most (kW, house + car together)": "Höchstens (kW, Haus + Auto zusammen)",
-  "the car gets what is left; below 6 A it pauses": "das Auto bekommt, was übrig bleibt; unter 6 A pausiert es"
+  "the car gets what is left; below 6 A it pauses": "das Auto bekommt, was übrig bleibt; unter 6 A pausiert es",
+  "car gets what is left up to the limit": "Auto bekommt den Rest bis zur Grenze",
+  "pause: no charging while it runs · 6 A: about 4.1 kW · rest up to the limit: needs \"Limit the grid import\" below": "pausieren: kein Laden, solange sie läuft · 6 A: ca. 4,1 kW · Rest bis zur Grenze: braucht „Netzbezug begrenzen“ unten"
 }

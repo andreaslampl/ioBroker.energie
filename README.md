@@ -96,8 +96,9 @@ Zwei Teile, jeder mit eigenem Haken (aus = Felder ausgeblendet, Regel aus):
 
 - **Wärmepumpe hat Vorrang vor dem Auto:** Datenpunkt der Wärmepumpe mit der Art **Ein/Aus** (true/false),
   **Leistung** (läuft ab x W) oder **Status** (aus bei bestimmten Werten, Zahlen oder Texte – z. B. Ochsner
-  „Wärmeerzeuger Status“ `0;3;8` = Standby, extern gesperrt, Störung). **Wenn die Wärmepumpe läuft:** Auto pausieren
-  oder Auto nur mit Mindeststrom (6 A) – in allen Modi.
+  „Wärmeerzeuger Status“ `0;3;8` = Standby, extern gesperrt, Störung). **Wenn die Wärmepumpe läuft:** **Auto pausieren**
+  (kein Laden), **Auto nur mit Mindeststrom (6 A)** oder **Auto bekommt den Rest bis zur Grenze** (lädt weiter mit dem,
+  was bis zur Netzbezugs-Grenze übrig bleibt – braucht „Netzbezug begrenzen“) – in allen Modi.
 - **Netzbezug begrenzen (Leistungstarif):** **Höchstens x kW, Haus + Auto zusammen.** Das Auto bekommt nur, was bis zu
   dieser Grenze **minus Reserve** (Standard 500 W) übrig ist, auf ganze Ampere abgerundet. Steigt der Hausverbrauch,
   wird der Ladestrom **sofort** gesenkt (erhöht wird höchstens alle 10 s); das Auto braucht dann noch einige Sekunden,
@@ -144,6 +145,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.7.1
+- Wallbox: „Auto bekommt den Rest bis zur Grenze“, solange die Wärmepumpe läuft; Hilfetext zu den Möglichkeiten.
 
 ### 0.7.0
 - Wallbox: klarere Bezeichnungen; Wärmepumpen-Vorrang und Bezugsgrenze mit eigenem Haken und im Betrieb umschaltbar
