@@ -13,7 +13,7 @@
  *   EnergyView.chart(el, day)                             5-minute curve of a day, touch/hover shows values
  *
  * snapshot: {pv, grid (+ import), battery (+ charge), soc, house, import, consumers: [{id, name, icon, w, from}]}
- *   consumer.from: house (default) | pv | grid | battery - where its line starts
+ *   consumer.from: house (default) | pv | grid | battery | c_<consumer id> - where its line starts
  */
 
 const EnergyView = (() => {

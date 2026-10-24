@@ -468,7 +468,7 @@
       "items": {
         "consumersHelp": {
           "type": "staticText",
-          "text": "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption.",
+          "text": "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter.",
           "xs": 12
         },
         "consumers": {
@@ -621,9 +621,19 @@
                 {
                   "value": "battery",
                   "label": "from the battery"
+                },
+                {
+                  "value": "consumer",
+                  "label": "from another consumer"
                 }
               ],
               "default": "house",
+              "width": "10%"
+            },
+            {
+              "type": "text",
+              "attr": "fromName",
+              "title": "Name of that consumer",
               "width": "10%"
             },
             {
@@ -877,10 +887,21 @@
             {
               "value": "battery",
               "label": "from the battery"
+            },
+            {
+              "value": "consumer",
+              "label": "from another consumer"
             }
           ],
           "default": "house",
           "help": "display only",
+          "xs": 12,
+          "sm": 4
+        },
+        "wbFromName": {
+          "type": "text",
+          "label": "Name of that consumer",
+          "hidden": "data.wbFrom !== 'consumer'",
           "xs": 12,
           "sm": 4
         },

@@ -176,5 +176,8 @@
   "green = only PV / battery, orange = a little from the grid, red = more from the grid": "grün = nur PV / Batterie, orange = wenig aus dem Netz, rot = mehr aus dem Netz",
   "Orange up to (W from the grid)": "Orange bis (W aus dem Netz)",
   "Reserve below the limit (W)": "Reserve unter der Grenze (W)",
-  "kept free for the house, e.g. when the kettle starts": "bleibt fürs Haus frei, z. B. wenn der Wasserkocher anspringt"
+  "kept free for the house, e.g. when the kettle starts": "bleibt fürs Haus frei, z. B. wenn der Wasserkocher anspringt",
+  "from another consumer": "von einem anderen Verbraucher",
+  "Name of that consumer": "Name dieses Verbrauchers",
+  "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter.": "Bis zu 8 Verbraucher unter dem Haus, z. B. Wallbox, Wärmepumpe, Heizstab. Sie sind Teil des Hausverbrauchs. Linie von einem anderen Verbraucher: dessen Namen eintragen (wie in der Spalte Name), z. B. eine Pumpe hinter einem Unterzähler."
 }

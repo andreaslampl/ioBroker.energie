@@ -176,5 +176,8 @@
   "green = only PV / battery, orange = a little from the grid, red = more from the grid": "green = only PV / battery, orange = a little from the grid, red = more from the grid",
   "Orange up to (W from the grid)": "Orange up to (W from the grid)",
   "Reserve below the limit (W)": "Reserve below the limit (W)",
-  "kept free for the house, e.g. when the kettle starts": "kept free for the house, e.g. when the kettle starts"
+  "kept free for the house, e.g. when the kettle starts": "kept free for the house, e.g. when the kettle starts",
+  "from another consumer": "from another consumer",
+  "Name of that consumer": "Name of that consumer",
+  "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter.": "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter."
 }

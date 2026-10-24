@@ -239,3 +239,20 @@ test('Charger: import limit keeps a reserve (default 500 W)', () => {
     const r = ch.update({ ts: 0, grid: 4000 + 11040, battery: null, soc: null, consumers: [{ id: 'wallbox', w: 11040 }] }, { mode: 'fast' });
     assert.equal(r.amps, 10);
 });
+
+test('consumer line from another consumer (by name); a loop is broken, unknown names and itself go to the house', () => {
+    const cfg = cleanConfig({
+        consumers: [
+            { name: 'Unterzähler Garage', state: 'g', from: 'house' },
+            { name: 'Pumpe', state: 'p', from: 'consumer', fromName: 'unterzähler garage' },
+            { name: 'A', state: 'a', from: 'consumer', fromName: 'B' },
+            { name: 'B', state: 'b', from: 'consumer', fromName: 'A' },
+            { name: 'C', state: 'c', from: 'consumer', fromName: 'gibt es nicht' },
+            { name: 'D', state: 'd', from: 'consumer', fromName: 'D' },
+        ],
+        wbPower: 'wb', wbCurrent: 'x', wbFrom: 'consumer', wbFromName: 'Unterzähler Garage',
+    });
+    // loop A <-> B: A goes back to the house, then B may come from A
+    assert.deepEqual(cfg.consumers.map(x => x.from), ['house', 'c_unterzaehler_garage', 'house', 'c_a', 'house', 'house', 'c_unterzaehler_garage']);
+    assert.equal(cfg.consumers[1].fromName, undefined);
+});

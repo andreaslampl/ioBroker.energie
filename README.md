@@ -112,7 +112,8 @@ im Auto) sind das ca. 12½ Stunden – ab ca. 18:20 lädt das Auto dann trotz W�
 ### Darstellung: Herkunft, Geschwindigkeit, Farbe des Hauses
 
 - **Linie von:** Bei jedem Verbraucher (Reiter „Verbraucher“) und bei der Wallbox lässt sich wählen, woher seine Linie
-  kommt – vom Haus (Standard), von PV, vom Netz oder von der Batterie. Das ist nur die Darstellung (z. B. ein Heizstab,
+  kommt – vom Haus (Standard), von PV, vom Netz, von der Batterie oder **von einem anderen Verbraucher** (dessen Namen
+  in der Spalte daneben eintragen, z. B. eine Pumpe hinter einem Unterzähler). Das ist nur die Darstellung (z. B. ein Heizstab,
   der direkt am PV-Wechselrichter hängt); gerechnet wird wie bisher. Diese Linien laufen im Bogen am Haus vorbei.
 - **Geschwindigkeit der Animation** (Reiter „Darstellung“): sehr langsam … sehr schnell; bei mehr Leistung bleibt es
   schneller.
@@ -136,6 +137,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.6.2
+- Linie eines Verbrauchers auch von einem anderen Verbraucher.
 
 ### 0.6.1
 - Wallbox: Reserve unter der Bezugsgrenze (Standard 500 W); Ladestrom wird sofort gesenkt.

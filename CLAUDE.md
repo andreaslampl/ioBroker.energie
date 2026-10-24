@@ -77,6 +77,10 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
 - 0.6.1: owner asked whether a reserve is kept below the import limit (e.g. 12 kW, heat pump + car) -> `wbPeakReserve`
   (default 500 W) subtracted from the limit; controlWallbox writes a lower current at once (higher still every 10 s).
 
+- 0.6.2: owner asked for lines from other (own) consumers -> `from` 'consumer' + `fromName` (consumers table / `wbFromName`),
+  `linkConsumers()` resolves by name or id to 'c_<id>' (unknown/itself -> house; loops broken at the first consumer
+  found in the loop); render needs nothing new (node key lookup + `curve()`).
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.
