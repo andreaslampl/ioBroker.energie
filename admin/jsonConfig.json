@@ -1183,14 +1183,15 @@
             },
             {
               "value": "limit",
-              "label": "car gets what is left up to the limit"
+              "label": "car gets what is left up to the limit",
+              "hidden": "!data.wbPeakUse || !(data.wbPeak > 0)"
             }
           ],
           "default": "pause",
           "xs": 6,
           "sm": 3,
           "hidden": "!data.wbHpUse",
-          "help": "pause: no charging while it runs · 6 A: about 4.1 kW · rest up to the limit: needs \"Limit the grid import\" below"
+          "help": "pause: no charging while it runs · 6 A: about 4.1 kW · rest up to the limit: only with \"Limit the grid import\" below"
         },
         "wbPeakUse": {
           "type": "checkbox",

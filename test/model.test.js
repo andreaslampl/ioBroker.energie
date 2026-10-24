@@ -286,3 +286,14 @@ test('Charger: heat pump runs, action "rest up to the limit" - the car follows t
     assert.equal(r.amps, 10);
     assert.match(r.status, /Bezugsgrenze 12,0 kW/);
 });
+
+test('Charger: "rest up to the limit" without an active limit gives the minimum current, not unlimited', () => {
+    const { Charger } = require('../lib/model');
+    const ch = new Charger(cleanConfig({ gridState: 'grid', wbPower: 'wb', wbCurrent: 'x', wbMax: 16, wbHp: 'hp', wbHpAction: 'limit', wbPeak: 12, wbPeakUse: false }).wallbox);
+    const r = ch.update({ ts: 0, grid: 4000, battery: null, soc: null, consumers: [{ id: 'wallbox', w: 0 }] }, { mode: 'fast', heatpump: true });
+    assert.equal(r.amps, 6);
+    assert.match(r.status, /keine Bezugsgrenze eingestellt/);
+    // limit switched off while running (peakLimit 0)
+    const ch2 = new Charger(cleanConfig({ gridState: 'grid', wbPower: 'wb', wbCurrent: 'x', wbMax: 16, wbHp: 'hp', wbHpAction: 'limit', wbPeak: 12 }).wallbox);
+    assert.equal(ch2.update({ ts: 0, grid: 4000, battery: null, soc: null, consumers: [{ id: 'wallbox', w: 0 }] }, { mode: 'fast', heatpump: true, peak: 0 }).amps, 6);
+});

@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "news": {
+      "0.7.2": {
+        "en": "Wallbox: 'rest up to the limit' can only be chosen with an active import limit; without one the car gets the minimum current while the heat pump runs",
+        "de": "Wallbox: „Rest bis zur Grenze“ ist nur mit aktiver Bezugsgrenze wählbar; ohne Grenze lädt das Auto bei laufender Wärmepumpe mit Mindeststrom"
+      },
       "0.7.1": {
         "en": "Wallbox: new choice while the heat pump runs - the car gets what is left up to the import limit; help text for the choices",
         "de": "Wallbox: neue Auswahl, solange die Wärmepumpe läuft – das Auto bekommt den Rest bis zur Bezugsgrenze; Hilfetext zu den Möglichkeiten"

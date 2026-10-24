@@ -92,6 +92,10 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
 - 0.7.1: owner wanted the pause choice explained / an option where the car keeps the rest up to the limit ->
   `wbHpAction` 'limit' (heat pump rule does nothing itself, the import limit decides), help text on the select.
 
+- 0.7.2: owner: 'rest up to the limit' should only be choosable with the limit ticked -> select option `hidden`
+  "!data.wbPeakUse || !(data.wbPeak > 0)" (jsonConfig selectOption.hidden; not checked in the real admin), and
+  Charger falls back to the minimum current ('nolimit') when the action is 'limit' but no limit is active.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

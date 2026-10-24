@@ -98,7 +98,8 @@ Zwei Teile, jeder mit eigenem Haken (aus = Felder ausgeblendet, Regel aus):
   **Leistung** (läuft ab x W) oder **Status** (aus bei bestimmten Werten, Zahlen oder Texte – z. B. Ochsner
   „Wärmeerzeuger Status“ `0;3;8` = Standby, extern gesperrt, Störung). **Wenn die Wärmepumpe läuft:** **Auto pausieren**
   (kein Laden), **Auto nur mit Mindeststrom (6 A)** oder **Auto bekommt den Rest bis zur Grenze** (lädt weiter mit dem,
-  was bis zur Netzbezugs-Grenze übrig bleibt – braucht „Netzbezug begrenzen“) – in allen Modi.
+  was bis zur Netzbezugs-Grenze übrig bleibt – nur wählbar, wenn „Netzbezug begrenzen“ angehakt ist; wird die Grenze
+  später ausgeschaltet, lädt das Auto bei laufender Wärmepumpe mit Mindeststrom) – in allen Modi.
 - **Netzbezug begrenzen (Leistungstarif):** **Höchstens x kW, Haus + Auto zusammen.** Das Auto bekommt nur, was bis zu
   dieser Grenze **minus Reserve** (Standard 500 W) übrig ist, auf ganze Ampere abgerundet. Steigt der Hausverbrauch,
   wird der Ladestrom **sofort** gesenkt (erhöht wird höchstens alle 10 s); das Auto braucht dann noch einige Sekunden,
@@ -145,6 +146,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.7.2
+- „Rest bis zur Grenze“ nur mit aktiver Bezugsgrenze wählbar; ohne Grenze Mindeststrom statt unbegrenzt.
 
 ### 0.7.1
 - Wallbox: „Auto bekommt den Rest bis zur Grenze“, solange die Wärmepumpe läuft; Hilfetext zu den Möglichkeiten.

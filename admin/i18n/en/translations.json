@@ -189,5 +189,5 @@
   "At most (kW, house + car together)": "At most (kW, house + car together)",
   "the car gets what is left; below 6 A it pauses": "the car gets what is left; below 6 A it pauses",
   "car gets what is left up to the limit": "car gets what is left up to the limit",
-  "pause: no charging while it runs · 6 A: about 4.1 kW · rest up to the limit: needs \"Limit the grid import\" below": "pause: no charging while it runs · 6 A: about 4.1 kW · rest up to the limit: needs \"Limit the grid import\" below"
+  "pause: no charging while it runs · 6 A: about 4.1 kW · rest up to the limit: only with \"Limit the grid import\" below": "pause: no charging while it runs · 6 A: about 4.1 kW · rest up to the limit: only with \"Limit the grid import\" below"
 }
