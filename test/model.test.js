@@ -214,3 +214,20 @@ test('hpRunning: on/off, power, status with off values (Ochsner, Dimplex texts)'
     // default off value 0
     assert.deepEqual(w({ wbHpKind: 'status' }).hpOff, ['0']);
 });
+
+test('view: consumer line source, animation speed, house color settings', () => {
+    const cfg = cleanConfig({
+        gridState: 'grid',
+        consumers: [{ name: 'Pool', state: 'pool', from: 'pv' }, { name: 'Sauna', state: 'sauna', from: 'evil' }],
+        wbPower: 'wb', wbCurrent: 'x', wbFrom: 'grid',
+        animSpeed: 1.5, houseColor: true, houseWarn: 800,
+    });
+    assert.deepEqual(cfg.consumers.map(c => c.from), ['pv', 'house', 'grid']);
+    assert.equal(cfg.view.speed, 1.5);
+    assert.equal(cfg.view.houseColor, true);
+    assert.equal(cfg.view.houseWarn, 800);
+    assert.equal(cleanConfig({ animSpeed: 99 }).view.speed, 4);
+    assert.equal(cleanConfig({}).view.speed, 1);
+    const s = snapshot(cfg, () => 100, 0);
+    assert.deepEqual(s.consumers.map(c => c.from), ['pv', 'house', 'grid']);
+});

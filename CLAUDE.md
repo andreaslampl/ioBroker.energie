@@ -68,6 +68,12 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   level HV battery") and `energy_contents.current_energy_content.physical_value` = 274; app showed 50 % ~2 h later
   while charging -> not decided yet. 0.5.2: `wbCarSocScale` factor, result in state `wallbox.carSoc`.
 
+- 0.6.0: owner asked: consumers' source in the flow, adjustable animation speed, house colored by source. Consumers
+  and wallbox `from` house|pv|grid|battery (display only; snapshot passes it; render: non-house sources drawn with
+  `curve()` = quadratic bezier bending away from the house); `view.speed` factor 0.25-4 (`animSpeed`, duration =
+  speed(w) / factor); `view.houseColor` + `houseWarn` W: house class src-green (< 50 W import) / src-orange
+  (<= houseWarn) / src-red. Copied to SmartView energy-view.js.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

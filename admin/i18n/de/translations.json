@@ -158,5 +158,21 @@
   "Off at values": "Aus bei Werten",
   "numbers or texts, separated by ; - e.g. Ochsner \"Wärmeerzeuger Status\": 0;3;8 (Standby, extern gesperrt, Störung)": "Zahlen oder Texte, getrennt mit ; – z. B. Ochsner „Wärmeerzeuger Status“: 0;3;8 (Standby, extern gesperrt, Störung)",
   "Heat pump (data point)": "Wärmepumpe (Datenpunkt)",
-  "e.g. 0.1 when the car reports 212 for 21.2 % - check energie.0.wallbox.carSoc against the app": "z. B. 0,1, wenn das Auto 212 für 21,2 % meldet – energie.0.wallbox.carSoc mit der App vergleichen"
+  "e.g. 0.1 when the car reports 212 for 21.2 % - check energie.0.wallbox.carSoc against the app": "z. B. 0,1, wenn das Auto 212 für 21,2 % meldet – energie.0.wallbox.carSoc mit der App vergleichen",
+  "Line from": "Linie von",
+  "from the house": "vom Haus",
+  "from PV": "von PV",
+  "from the grid": "vom Netz",
+  "from the battery": "von der Batterie",
+  "display only": "nur Darstellung",
+  "Animation speed": "Geschwindigkeit der Animation",
+  "very slow": "sehr langsam",
+  "slow": "langsam",
+  "fast": "schnell",
+  "very fast": "sehr schnell",
+  "still faster with more power": "bei mehr Leistung weiterhin schneller",
+  "House by source": "Haus nach Herkunft",
+  "Color the house by where its power comes from": "Haus nach Herkunft des Stroms einfärben",
+  "green = only PV / battery, orange = a little from the grid, red = more from the grid": "grün = nur PV / Batterie, orange = wenig aus dem Netz, rot = mehr aus dem Netz",
+  "Orange up to (W from the grid)": "Orange bis (W aus dem Netz)"
 }

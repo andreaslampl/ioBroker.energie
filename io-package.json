@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.5.2",
+    "version": "0.6.0",
     "news": {
+      "0.6.0": {
+        "en": "Flow: line of each consumer (and the wallbox) from house, PV, grid or battery; animation speed adjustable; house outline green / orange / red by grid import",
+        "de": "Energiefluss: Linie jedes Verbrauchers (und der Wallbox) vom Haus, von PV, vom Netz oder von der Batterie; Geschwindigkeit der Animation einstellbar; Haus grün / orange / rot nach Netzbezug"
+      },
       "0.5.2": {
         "en": "Wallbox: factor for the car's charge level (e.g. 0.1 for EU Data Act values), shown in wallbox.carSoc",
         "de": "Wallbox: Faktor für den Akkustand des Autos (z. B. 0,1 für Werte aus dem EU Data Act), angezeigt in wallbox.carSoc"
@@ -165,7 +169,11 @@
     "wbReady": "",
     "wbHpKind": "auto",
     "wbHpOff": "0",
-    "wbCarSocScale": 1
+    "wbCarSocScale": 1,
+    "wbFrom": "house",
+    "animSpeed": 1,
+    "houseColor": false,
+    "houseWarn": 1000
   },
   "objects": [],
   "instanceObjects": [

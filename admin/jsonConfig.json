@@ -486,7 +486,7 @@
               "type": "objectId",
               "attr": "state",
               "title": "Data point (power)",
-              "width": "30%"
+              "width": "24%"
             },
             {
               "type": "select",
@@ -600,6 +600,31 @@
               ],
               "default": "plug",
               "width": "14%"
+            },
+            {
+              "type": "select",
+              "attr": "from",
+              "title": "Line from",
+              "options": [
+                {
+                  "value": "house",
+                  "label": "from the house"
+                },
+                {
+                  "value": "pv",
+                  "label": "from PV"
+                },
+                {
+                  "value": "grid",
+                  "label": "from the grid"
+                },
+                {
+                  "value": "battery",
+                  "label": "from the battery"
+                }
+              ],
+              "default": "house",
+              "width": "10%"
             },
             {
               "type": "select",
@@ -830,6 +855,32 @@
             }
           ],
           "default": "car",
+          "xs": 12,
+          "sm": 4
+        },
+        "wbFrom": {
+          "type": "select",
+          "label": "Line from",
+          "options": [
+            {
+              "value": "house",
+              "label": "from the house"
+            },
+            {
+              "value": "pv",
+              "label": "from PV"
+            },
+            {
+              "value": "grid",
+              "label": "from the grid"
+            },
+            {
+              "value": "battery",
+              "label": "from the battery"
+            }
+          ],
+          "default": "house",
+          "help": "display only",
           "xs": 12,
           "sm": 4
         },
@@ -1236,6 +1287,36 @@
           ],
           "default": "on",
           "help": "'as set on the device': off when the device reduces motion (Windows animation effects, iPhone reduce motion)",
+          "xs": 12,
+          "sm": 4
+        },
+        "animSpeed": {
+          "type": "select",
+          "label": "Animation speed",
+          "options": [
+            {
+              "value": 0.5,
+              "label": "very slow"
+            },
+            {
+              "value": 0.75,
+              "label": "slow"
+            },
+            {
+              "value": 1,
+              "label": "normal"
+            },
+            {
+              "value": 1.5,
+              "label": "fast"
+            },
+            {
+              "value": 2,
+              "label": "very fast"
+            }
+          ],
+          "default": 1,
+          "help": "still faster with more power",
           "xs": 12,
           "sm": 4
         },
@@ -1691,6 +1772,29 @@
           "default": "house",
           "xs": 6,
           "sm": 3
+        },
+        "houseHeader": {
+          "type": "header",
+          "text": "House by source",
+          "size": 4
+        },
+        "houseColor": {
+          "type": "checkbox",
+          "label": "Color the house by where its power comes from",
+          "help": "green = only PV / battery, orange = a little from the grid, red = more from the grid",
+          "xs": 12,
+          "sm": 8,
+          "newLine": true
+        },
+        "houseWarn": {
+          "type": "number",
+          "label": "Orange up to (W from the grid)",
+          "default": 1000,
+          "min": 0,
+          "max": 50000,
+          "hidden": "!data.houseColor",
+          "xs": 12,
+          "sm": 4
         }
       }
     },

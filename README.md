@@ -106,6 +106,16 @@ dann zum Netzbezug und zum Hausverbrauch dazu (Energiefluss, Tageswerte, Regelun
 Beispiel ID.4 (77 kWh), Ziel 80 %, fertig um 07:00, Akku 20 %: es fehlen ca. 46 kWh; mit 6 A × 3 Phasen (≈ 3,7 kW
 im Auto) sind das ca. 12½ Stunden – ab ca. 18:20 lädt das Auto dann trotz Wärmepumpe mit Mindeststrom.
 
+### Darstellung: Herkunft, Geschwindigkeit, Farbe des Hauses
+
+- **Linie von:** Bei jedem Verbraucher (Reiter „Verbraucher“) und bei der Wallbox lässt sich wählen, woher seine Linie
+  kommt – vom Haus (Standard), von PV, vom Netz oder von der Batterie. Das ist nur die Darstellung (z. B. ein Heizstab,
+  der direkt am PV-Wechselrichter hängt); gerechnet wird wie bisher. Diese Linien laufen im Bogen am Haus vorbei.
+- **Geschwindigkeit der Animation** (Reiter „Darstellung“): sehr langsam … sehr schnell; bei mehr Leistung bleibt es
+  schneller.
+- **Haus nach Herkunft einfärben:** grün = alles von PV/Batterie, orange = wenig aus dem Netz (bis zur eingestellten
+  Grenze, Standard 1000 W), rot = mehr aus dem Netz.
+
 ## Datenpunkte
 
 | Datenpunkt | Inhalt |
@@ -123,6 +133,11 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.6.0
+- Verbraucher (und Wallbox): Linie vom Haus, von PV, vom Netz oder von der Batterie (nur Darstellung).
+- Geschwindigkeit der Animation einstellbar (sehr langsam … sehr schnell).
+- Haus nach Herkunft einfärben: grün = nur PV/Batterie, orange = wenig aus dem Netz, rot = mehr.
 
 ### 0.5.2
 - Faktor für den Akkustand des Autos, Ergebnis in `wallbox.carSoc`.

@@ -6,12 +6,14 @@
  *
  *   const f = EnergyView.flow(el);  f.update(snapshot, view)  animated flow (built once, then only updated)
  *     view: {shape: round|square, line: dots|dash|solid, anim: auto|on|off, icons: {pv, grid, battery, house},
+ *            speed: factor (1 = normal), houseColor: true (outline green/orange/red by import), houseWarn: W,
  *            pos: {pv|grid|battery|house|c_<id>: {x, y}}  (own arrangement, from f.edit())}
  *   f.edit(true, pos => …)  drag the symbols; the callback gets the moved positions on every drop
  *   EnergyView.stats(el, summary, battery)                today's values
  *   EnergyView.chart(el, day)                             5-minute curve of a day, touch/hover shows values
  *
- * snapshot: {pv, grid (+ import), battery (+ charge), soc, house, consumers: [{id, name, icon, w}]}
+ * snapshot: {pv, grid (+ import), battery (+ charge), soc, house, import, consumers: [{id, name, icon, w, from}]}
+ *   consumer.from: house (default) | pv | grid | battery - where its line starts
  */
 
 const EnergyView = (() => {
@@ -87,7 +89,7 @@ const EnergyView = (() => {
       // few consumers stay near the middle, many use the whole width
       const spread = Math.min(280, (n - 1) * 120);
       const x = n === 1 ? 180 : 180 - spread / 2 + (spread / (n - 1)) * i;
-      nodes.push({ key: 'c_' + c.id, x, y: 285, icon: c.icon, label: c.name, consumer: true, r: n > 5 ? 22 : 26 });
+      nodes.push({ key: 'c_' + c.id, x, y: 285, icon: c.icon, label: c.name, consumer: true, from: c.from || 'house', r: n > 5 ? 22 : 26 });
     });
     // own arrangement
     const pos = (view && view.pos) || {};
@@ -119,6 +121,33 @@ const EnergyView = (() => {
     return 'M' + (a.x + (dx / d) * ra).toFixed(1) + ' ' + (a.y + (dy / d) * ra).toFixed(1) + ' L' + (b.x - (dx / d) * rb).toFixed(1) + ' ' + (b.y - (dy / d) * rb).toFixed(1);
   }
 
+  /**
+   * curve from node a to node b that bends around `avoid` (the house): used for consumers fed directly from
+   * PV, grid or battery, whose straight line would often cross the house
+   */
+  function curve(a, b, square, avoid) {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const d = Math.hypot(dx, dy) || 1;
+    const mx = (a.x + b.x) / 2;
+    const my = (a.y + b.y) / 2;
+    const off = Math.max(45, d * 0.35);
+    // the side further away from the house
+    const c1 = { x: mx - (dy / d) * off, y: my + (dx / d) * off };
+    const c2 = { x: mx + (dy / d) * off, y: my - (dx / d) * off };
+    const dist = c => Math.hypot(c.x - avoid.x, c.y - avoid.y);
+    const c = dist(c1) >= dist(c2) ? c1 : c2;
+    const edge = (n, to) => {
+      const ex = to.x - n.x;
+      const ey = to.y - n.y;
+      const e = Math.hypot(ex, ey) || 1;
+      const k = square ? 1 / Math.max(Math.abs(ex / e), Math.abs(ey / e)) : 1;
+      const r = (n.r || R) * k + 4;
+      return (n.x + (ex / e) * r).toFixed(1) + ' ' + (n.y + (ey / e) * r).toFixed(1);
+    };
+    return 'M' + edge(a, c) + ' Q' + c.x.toFixed(1) + ' ' + c.y.toFixed(1) + ' ' + edge(b, c);
+  }
+
   function flow(el) {
     let shape = '';
     let parts = {};
@@ -126,6 +155,7 @@ const EnergyView = (() => {
     let vbNow = null;
     let editCb = null;
     let drag = null;
+    let factor = 1; // animation speed from the settings
 
     function build(s, view, fixedVb) {
       const v = view || {};
@@ -154,8 +184,9 @@ const EnergyView = (() => {
       for (const n of nodes) {
         if (n.key === 'house') continue;
         // every line runs from the node to the house: normal = towards the house, reverse = away from it
-        // (consumers: reverse, the energy flows from the house to them)
-        const d = line(n, house, sq);
+        // (consumers: reverse, the energy flows to them - from the house or the chosen source node)
+        const src = (n.consumer && nodes.find(x => x.key === n.from)) || house;
+        const d = src === house ? line(n, house, sq) : curve(n, src, sq, house);
         svg += '<path class="ef-base" d="' + d + '"/><path class="ef-dots" data-line="' + esc(n.key) + '" d="' + d + '"/>';
       }
       for (const n of nodes) {
@@ -190,7 +221,7 @@ const EnergyView = (() => {
       p.style.visibility = on ? 'visible' : 'hidden';
       if (!on) return;
       p.style.stroke = color;
-      p.style.animationDuration = speed(w).toFixed(2) + 's';
+      p.style.animationDuration = (speed(w) / factor).toFixed(2) + 's';
       p.style.animationDirection = inward ? 'normal' : 'reverse';
     }
 
@@ -205,7 +236,7 @@ const EnergyView = (() => {
     function update(s, view) {
       last = { s, view: view || {} };
       if (drag) return;
-      const key = [s.grid !== null && s.grid !== undefined, s.battery !== null && s.battery !== undefined, (s.consumers || []).map(c => c.id + c.icon + c.name).join(), JSON.stringify(view || {})].join('|');
+      const key = [s.grid !== null && s.grid !== undefined, s.battery !== null && s.battery !== undefined, (s.consumers || []).map(c => c.id + c.icon + c.name + (c.from || '')).join(), JSON.stringify(view || {})].join('|');
       if (key !== shape) {
         shape = key;
         build(s, view);
@@ -214,6 +245,8 @@ const EnergyView = (() => {
     }
 
     function apply(s) {
+      const v = (last && last.view) || {};
+      factor = Number(v.speed) > 0 ? Number(v.speed) : 1;
       setLine('pv', s.pv, true, COLOR.pv);
       setNode('pv', fmtW(s.pv), undefined, s.pv >= 10 ? 'active' : '');
       if (s.grid !== null && s.grid !== undefined) {
@@ -228,7 +261,13 @@ const EnergyView = (() => {
         const ring = parts.n_battery && parts.n_battery.querySelector('.ef-soc');
         if (ring) ring.setAttribute('stroke-dasharray', (s.soc === null || s.soc === undefined ? 0 : s.soc) + ' 100');
       }
-      setNode('house', fmtW(s.house));
+      // outline of the house by where its power comes from (optional)
+      let src = '';
+      if (v.houseColor && s.grid !== null && s.grid !== undefined) {
+        const imp = Math.max(0, s.grid);
+        src = imp < 50 ? 'src-green' : imp <= (Number(v.houseWarn) >= 0 ? Number(v.houseWarn) : 1000) ? 'src-orange' : 'src-red';
+      }
+      setNode('house', fmtW(s.house), undefined, src);
       for (const c of s.consumers || []) {
         setLine('c_' + c.id, c.w, false, COLOR.consumer);
         setNode('c_' + c.id, fmtW(c.w), undefined, c.w >= 10 ? 'active' : '');
@@ -380,6 +419,8 @@ const EnergyView = (() => {
     '.ef-battery .ef-soc{fill:none;stroke:#12a594;stroke-width:4;stroke-linecap:round}',
     '.ef-battery.active .ef-ic{stroke:#12a594}',
     '.ef-house .ef-bg{stroke:var(--ef-accent,#4c8dff);stroke-width:2.5}.ef-house .ef-ic{stroke:var(--ef-accent,#4c8dff)}',
+    '.ef-house.src-green .ef-bg,.ef-house.src-green .ef-ic{stroke:#30a46c}.ef-house.src-orange .ef-bg,.ef-house.src-orange .ef-ic{stroke:#f08c00}.ef-house.src-red .ef-bg,.ef-house.src-red .ef-ic{stroke:#e5484d}',
+    '.ef-house.src-green .ef-bg,.ef-house.src-orange .ef-bg,.ef-house.src-red .ef-bg{stroke-width:3.5}',
     '.ef-consumer.active .ef-bg,.ef-consumer.active .ef-ic{stroke:#8e7cf0}',
     '.ef-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}',
     '.ef-card{background:var(--ef-node,rgba(127,127,127,.12));border-radius:12px;padding:9px 11px;display:grid;grid-template-columns:20px 1fr;gap:2px 8px;align-items:center}',
