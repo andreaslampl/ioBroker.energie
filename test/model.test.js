@@ -256,3 +256,24 @@ test('consumer line from another consumer (by name); a loop is broken, unknown n
     assert.deepEqual(cfg.consumers.map(x => x.from), ['house', 'c_unterzaehler_garage', 'house', 'c_a', 'house', 'house', 'c_unterzaehler_garage']);
     assert.equal(cfg.consumers[1].fromName, undefined);
 });
+
+test('Charger: heat pump rule and import limit can be switched off (settings and while running)', () => {
+    const { Charger } = require('../lib/model');
+    const base = { gridState: 'grid', wbPower: 'wb', wbCurrent: 'x', wbMax: 16, wbHp: 'hp' };
+    const snap = (grid, car) => ({ ts: 0, grid, battery: null, soc: null, consumers: [{ id: 'wallbox', w: car }] });
+    // older settings: action 'none' = off
+    assert.equal(cleanConfig({ ...base, wbHpAction: 'none' }).wallbox.hpUse, false);
+    assert.equal(cleanConfig({ ...base }).wallbox.hpUse, true);
+    let ch = new Charger(cleanConfig({ ...base, wbHpUse: false }).wallbox);
+    assert.equal(ch.update(snap(0, 0), { mode: 'fast', heatpump: true }).amps, 16, 'rule off in the settings');
+    ch = new Charger(cleanConfig({ ...base, wbHpUse: true }).wallbox);
+    assert.equal(ch.update(snap(0, 0), { mode: 'fast', heatpump: true }).amps, 0);
+    assert.equal(ch.update(snap(0, 0), { mode: 'fast', heatpump: true, hpRule: false }).amps, 16, 'switched off while running');
+    // import limit: checkbox off = no limit; while running: peak in W
+    ch = new Charger(cleanConfig({ ...base, wbPeak: 8, wbPeakUse: false, wbPeakReserve: 0 }).wallbox);
+    assert.equal(ch.update(snap(3000 + 11040, 11040), { mode: 'fast' }).amps, 16);
+    assert.equal(ch.update(snap(3000 + 11040, 11040), { mode: 'fast', peak: 8000 }).amps, 7);
+    ch = new Charger(cleanConfig({ ...base, wbPeak: 8, wbPeakReserve: 0 }).wallbox);
+    assert.equal(ch.update(snap(3000 + 11040, 11040), { mode: 'fast' }).amps, 7);
+    assert.equal(ch.update(snap(3000 + 11040, 11040), { mode: 'fast', peak: 0 }).amps, 16, 'limit 0 = off');
+});

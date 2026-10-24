@@ -179,5 +179,13 @@
   "kept free for the house, e.g. when the kettle starts": "kept free for the house, e.g. when the kettle starts",
   "from another consumer": "from another consumer",
   "Name of that consumer": "Name of that consumer",
-  "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter.": "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter."
+  "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter.": "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter.",
+  "Heat pump has priority over the car": "Heat pump has priority over the car",
+  "switchable while running: energie.0.wallbox.hpPriority": "switchable while running: energie.0.wallbox.hpPriority",
+  "When the heat pump runs": "When the heat pump runs",
+  "car only with the minimum current (6 A)": "car only with the minimum current (6 A)",
+  "Limit the grid import (power-based tariff)": "Limit the grid import (power-based tariff)",
+  "switchable while running: energie.0.wallbox.peakLimit (kW, 0 = off)": "switchable while running: energie.0.wallbox.peakLimit (kW, 0 = off)",
+  "At most (kW, house + car together)": "At most (kW, house + car together)",
+  "the car gets what is left; below 6 A it pauses": "the car gets what is left; below 6 A it pauses"
 }

@@ -189,3 +189,28 @@ test('adapter: car charge level with factor (EU Data Act reports 212 for 21.2 %)
     adapter.change('vw-connect.0.VIN.statuseudata.value', 503);
     await until(() => adapter.val('wallbox.carSoc') === 50.3);
 });
+
+test('adapter: heat pump rule and import limit switchable via wallbox.hpPriority / wallbox.peakLimit', async t => {
+    const { adapter } = await start(t, {
+        consumers: [],
+        wbPower: 'versicharge.0.power.total',
+        wbCurrent: 'versicharge.0.control.current',
+        wbHp: 'ochsner.0.status',
+        wbHpKind: 'status',
+        wbHpOff: '0',
+        wbMode: 'fast',
+        wbPeak: 12,
+    });
+    adapter.add('versicharge.0.power.total', 'W', 0);
+    adapter.add('ochsner.0.status', '', 1);
+    adapter.change('ochsner.0.status', 1);
+    await until(() => adapter.val('wallbox.status') === 'Pause – Wärmepumpe läuft');
+    assert.equal(adapter.val('wallbox.hpPriority'), true);
+    assert.equal(adapter.val('wallbox.peakLimit'), 12);
+    adapter.command('wallbox.hpPriority', false);
+    await until(() => adapter.writes.at(-1).val === 16);
+    assert.equal(adapter.states['energie.0.wallbox.hpPriority'].ack, true);
+    adapter.command('wallbox.peakLimit', 2);
+    await until(() => /Bezugsgrenze/.test(adapter.val('wallbox.status')));
+    assert.equal(adapter.writes.at(-1).val, 0);
+});

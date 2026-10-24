@@ -179,5 +179,13 @@
   "kept free for the house, e.g. when the kettle starts": "bleibt fürs Haus frei, z. B. wenn der Wasserkocher anspringt",
   "from another consumer": "von einem anderen Verbraucher",
   "Name of that consumer": "Name dieses Verbrauchers",
-  "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter.": "Bis zu 8 Verbraucher unter dem Haus, z. B. Wallbox, Wärmepumpe, Heizstab. Sie sind Teil des Hausverbrauchs. Linie von einem anderen Verbraucher: dessen Namen eintragen (wie in der Spalte Name), z. B. eine Pumpe hinter einem Unterzähler."
+  "Up to 8 consumers shown below the house, e.g. wallbox, heat pump, heating rod. They are part of the house consumption. Line from another consumer: enter its name (as in the column Name), e.g. a pump behind a sub-meter.": "Bis zu 8 Verbraucher unter dem Haus, z. B. Wallbox, Wärmepumpe, Heizstab. Sie sind Teil des Hausverbrauchs. Linie von einem anderen Verbraucher: dessen Namen eintragen (wie in der Spalte Name), z. B. eine Pumpe hinter einem Unterzähler.",
+  "Heat pump has priority over the car": "Wärmepumpe hat Vorrang vor dem Auto",
+  "switchable while running: energie.0.wallbox.hpPriority": "im Betrieb umschaltbar: energie.0.wallbox.hpPriority",
+  "When the heat pump runs": "Wenn die Wärmepumpe läuft",
+  "car only with the minimum current (6 A)": "Auto nur mit Mindeststrom (6 A)",
+  "Limit the grid import (power-based tariff)": "Netzbezug begrenzen (Leistungstarif)",
+  "switchable while running: energie.0.wallbox.peakLimit (kW, 0 = off)": "im Betrieb änderbar: energie.0.wallbox.peakLimit (kW, 0 = aus)",
+  "At most (kW, house + car together)": "Höchstens (kW, Haus + Auto zusammen)",
+  "the car gets what is left; below 6 A it pauses": "das Auto bekommt, was übrig bleibt; unter 6 A pausiert es"
 }

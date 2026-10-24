@@ -122,6 +122,13 @@ class Energie extends utils.Adapter {
         this.wb.mode = st && MODES[st.val] ? st.val : w.mode;
         await this.setState('wallbox.mode', this.wb.mode, true);
         this.subscribeStates('wallbox.mode');
+        // switchable while running (SmartView, VIS, scripts); at every start they take the instance settings
+        this.wb.hpRule = w.hpUse;
+        this.wb.peak = w.peakUse ? w.peak : 0;
+        await this.setState('wallbox.hpPriority', this.wb.hpRule, true);
+        await this.setState('wallbox.peakLimit', this.wb.peak / 1000, true);
+        this.subscribeStates('wallbox.hpPriority');
+        this.subscribeStates('wallbox.peakLimit');
         for (const [key, id] of [
             ['current', w.current],
             ['plugged', w.plugged],
@@ -182,7 +189,7 @@ class Energie extends utils.Adapter {
 
     async controlWallbox(s) {
         const w = this.cfg.wallbox;
-        const res = this.charger.update(s, { mode: this.wb.mode, plugged: this.wb.plugged, heatpump: this.wb.hp, carSoc: this.wb.carSoc });
+        const res = this.charger.update(s, { mode: this.wb.mode, plugged: this.wb.plugged, heatpump: this.wb.hp, carSoc: this.wb.carSoc, hpRule: this.wb.hpRule, peak: this.wb.peak });
         if (res.urgent !== this.wb.urgent) {
             this.wb.urgent = res.urgent;
             if (res.urgent) {
@@ -317,6 +324,23 @@ class Energie extends utils.Adapter {
             await state('wallbox.target', { type: 'number', role: 'value.current', unit: 'A', read: true, write: false, name: { en: 'Charging current set', de: 'Vorgegebener Ladestrom' } });
             await state('wallbox.available', watt('Power available for the car', 'Leistung fürs Auto verfügbar'));
             await state('wallbox.carSoc', { ...pct('Charge level of the car (after the factor)', 'Akkustand des Autos (nach dem Faktor)'), role: 'value.battery' });
+            await state('wallbox.hpPriority', {
+                type: 'boolean',
+                role: 'switch.enable',
+                read: true,
+                write: true,
+                name: { en: 'Heat pump first (car paused / minimum current while it runs)', de: 'Wärmepumpe hat Vorrang (Auto pausiert / Mindeststrom, solange sie läuft)' },
+            });
+            await state('wallbox.peakLimit', {
+                type: 'number',
+                role: 'level.power',
+                unit: 'kW',
+                min: 0,
+                max: 100,
+                read: true,
+                write: true,
+                name: { en: 'Grid import at most incl. car (kW, 0 = off)', de: 'Netzbezug höchstens inkl. Auto (kW, 0 = aus)' },
+            });
             await state('wallbox.urgent', {
                 type: 'boolean',
                 role: 'indicator',
@@ -371,6 +395,17 @@ class Energie extends utils.Adapter {
         }
         if (id === `${this.namespace}.wallbox.mode` && state && !state.ack) {
             this.setMode(state.val).catch(err => this.log.warn(`Wallbox: ${err.message}`));
+        }
+        if (id === `${this.namespace}.wallbox.hpPriority` && state && !state.ack) {
+            this.wb.hpRule = state.val === true || state.val === 1 || state.val === 'true';
+            this.log.info(`Wallbox: heat pump first ${this.wb.hpRule ? 'on' : 'off'}`);
+            this.setState('wallbox.hpPriority', this.wb.hpRule, true).catch(() => {});
+        }
+        if (id === `${this.namespace}.wallbox.peakLimit` && state && !state.ack) {
+            const kw = Math.max(0, Math.min(100, Number(String(state.val).replace(',', '.')) || 0));
+            this.wb.peak = kw * 1000;
+            this.log.info(`Wallbox: import limit ${kw ? kw + ' kW' : 'off'}`);
+            this.setState('wallbox.peakLimit', kw, true).catch(() => {});
         }
         if (id === w.current) {
             this.wbValue('current', state ? state.val : null);

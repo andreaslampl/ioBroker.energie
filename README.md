@@ -92,15 +92,21 @@ dann zum Netzbezug und zum Hausverbrauch dazu (Energiefluss, Tageswerte, Regelun
 
 ### Wärmepumpe und Lastspitzen (Netztarif nach Spitzenleistung)
 
-- **Wärmepumpe:** Datenpunkt mit der Art **Ein/Aus** (true/false), **Leistung** (läuft ab x W) oder **Status** (aus bei
-  bestimmten Werten, Zahlen oder Texte – z. B. Ochsner „Wärmeerzeuger Status“ `0;3;8` = Standby, extern gesperrt,
-  Störung; bei Dimplex und anderen den Betriebsstatus mit seinen Aus-Werten). Solange sie läuft, wird das Auto
-  **pausiert** oder auf den **Mindeststrom** gesenkt (einstellbar) – in allen Modi.
-- **Netzbezug höchstens (kW, inkl. Auto):** Das Auto bekommt nur, was bis zu dieser Grenze **minus Reserve** (Standard
-  500 W) übrig ist, auf ganze Ampere abgerundet. Steigt der Hausverbrauch, wird der Ladestrom **sofort** gesenkt
-  (erhöht wird höchstens alle 10 s); das Auto braucht dann noch einige Sekunden, bis es folgt. Reicht es nicht für den
-  Mindeststrom, pausiert es und startet erst nach der Start-Verzögerung wieder (nicht bei jedem Wasserkocher).
-  Beispiel: Grenze 12 kW, Reserve 0,5 kW, Haus mit Wärmepumpe 4 kW → fürs Auto 7,5 kW → 10 A (6,9 kW, 3-phasig).
+Zwei Teile, jeder mit eigenem Haken (aus = Felder ausgeblendet, Regel aus):
+
+- **Wärmepumpe hat Vorrang vor dem Auto:** Datenpunkt der Wärmepumpe mit der Art **Ein/Aus** (true/false),
+  **Leistung** (läuft ab x W) oder **Status** (aus bei bestimmten Werten, Zahlen oder Texte – z. B. Ochsner
+  „Wärmeerzeuger Status“ `0;3;8` = Standby, extern gesperrt, Störung). **Wenn die Wärmepumpe läuft:** Auto pausieren
+  oder Auto nur mit Mindeststrom (6 A) – in allen Modi.
+- **Netzbezug begrenzen (Leistungstarif):** **Höchstens x kW, Haus + Auto zusammen.** Das Auto bekommt nur, was bis zu
+  dieser Grenze **minus Reserve** (Standard 500 W) übrig ist, auf ganze Ampere abgerundet. Steigt der Hausverbrauch,
+  wird der Ladestrom **sofort** gesenkt (erhöht wird höchstens alle 10 s); das Auto braucht dann noch einige Sekunden,
+  bis es folgt. Reicht es nicht für den Mindeststrom, pausiert es und startet erst nach der Start-Verzögerung wieder.
+  Beispiel: 12 kW, Reserve 0,5 kW, Haus mit Wärmepumpe 4 kW → fürs Auto 7,5 kW → 10 A (6,9 kW, 3-phasig).
+  Tipp: Soll sich das Auto an die Grenze **anpassen** statt bei laufender Wärmepumpe ganz zu pausieren, den Haken
+  „Wärmepumpe hat Vorrang“ ausschalten und nur die Grenze verwenden – die Wärmepumpe zählt ja zum Hausverbrauch.
+- **Im Betrieb umschalten** (z. B. Schalter-Kachel in SmartView, VIS, Skript): `energie.0.wallbox.hpPriority`
+  (true/false) und `energie.0.wallbox.peakLimit` (kW, 0 = aus). Bei jedem Start gelten wieder die Instanz-Einstellungen.
 - **Fertig bis (optional):** Akkustand des Autos (z. B. aus dem VW-Adapter; mit **Faktor**, falls der Wert z. B. in
   Zehntel-Prozent kommt – `wallbox.carSoc` zeigt das Ergebnis zum Vergleich mit der App), Akkugröße, Ziel-% und Uhrzeit. Reicht die
   Zeit bis dahin mit Mindeststrom gerade noch (plus 15 Minuten Reserve), laden **beide** – das Auto mit Mindeststrom –,
@@ -129,6 +135,7 @@ im Auto) sind das ca. 12½ Stunden – ab ca. 18:20 lädt das Auto dann trotz W�
 | `today.*`, `yesterday.*` | pv, house, import, export, charge, discharge (kWh), autarky, selfUse (%) |
 | `consumers.<name>.power`, `.today` | je Verbraucher |
 | `surplus.power`, `surplus.active` | Überschuss (Einspeisung, optional + Batterieladung) und Signal mit Schwellen/Verzögerung – z. B. für ioBroker.logik |
+| `wallbox.hpPriority`, `wallbox.peakLimit` (schreibbar) | Wärmepumpen-Vorrang ein/aus, Bezugsgrenze in kW (0 = aus) |
 | `wallbox.mode` (schreibbar), `wallbox.status`, `wallbox.target`, `wallbox.available`, `wallbox.urgent` | Wallbox: Modus, was die Regelung macht, vorgegebener Strom (A), verfügbare Leistung (W), „würde nicht rechtzeitig voll“ |
 | `live` | alle Werte als JSON (für SmartView) |
 
@@ -137,6 +144,10 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.7.0
+- Wallbox: klarere Bezeichnungen; Wärmepumpen-Vorrang und Bezugsgrenze mit eigenem Haken und im Betrieb umschaltbar
+  (`wallbox.hpPriority`, `wallbox.peakLimit`).
 
 ### 0.6.2
 - Linie eines Verbrauchers auch von einem anderen Verbraucher.

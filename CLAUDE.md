@@ -81,6 +81,11 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   `linkConsumers()` resolves by name or id to 'c_<id>' (unknown/itself -> house; loops broken at the first consumer
   found in the loop); render needs nothing new (node key lookup + `curve()`).
 
+- 0.7.0: owner found the heat pump / limit settings confusing and wanted them switchable -> checkboxes `wbHpUse`
+  (default true; older `wbHpAction` 'none' = off) and `wbPeakUse` (default true), select only pause|min, labels
+  reworded; runtime states `wallbox.hpPriority` (bool) / `wallbox.peakLimit` (kW, 0 = off) set from the settings at
+  every start, passed to `Charger.update()` as `hpRule` / `peak` (W) overriding the config.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

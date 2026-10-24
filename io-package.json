@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.6.2",
+    "version": "0.7.0",
     "news": {
+      "0.7.0": {
+        "en": "Wallbox: clearer names; heat pump priority and import limit each with an on/off checkbox and switchable while running (wallbox.hpPriority, wallbox.peakLimit)",
+        "de": "Wallbox: klarere Bezeichnungen; Wärmepumpen-Vorrang und Bezugsgrenze je mit Haken ein/aus und im Betrieb umschaltbar (wallbox.hpPriority, wallbox.peakLimit)"
+      },
       "0.6.2": {
         "en": "Flow: a consumer's line can also come from another consumer (e.g. behind a sub-meter)",
         "de": "Energiefluss: Die Linie eines Verbrauchers kann auch von einem anderen Verbraucher kommen (z. B. hinter einem Unterzähler)"
@@ -183,7 +187,9 @@
     "houseColor": false,
     "houseWarn": 1000,
     "wbPeakReserve": 500,
-    "wbFromName": ""
+    "wbFromName": "",
+    "wbHpUse": true,
+    "wbPeakUse": true
   },
   "objects": [],
   "instanceObjects": [

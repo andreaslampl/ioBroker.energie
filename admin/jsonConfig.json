@@ -1108,13 +1108,22 @@
           "text": "For grid tariffs that charge the highest power: the heat pump goes first, and the grid import incl. the car can be limited. If the car would otherwise not reach the target by the ready time, both run - the car with the minimum current.",
           "xs": 12
         },
+        "wbHpUse": {
+          "type": "checkbox",
+          "label": "Heat pump has priority over the car",
+          "default": true,
+          "help": "switchable while running: energie.0.wallbox.hpPriority",
+          "xs": 12,
+          "newLine": true
+        },
         "wbHp": {
           "type": "objectId",
           "label": "Heat pump (data point)",
           "help": "empty = off",
           "xs": 12,
           "sm": 6,
-          "newLine": true
+          "newLine": true,
+          "hidden": "!data.wbHpUse"
         },
         "wbHpKind": {
           "type": "select",
@@ -1135,14 +1144,15 @@
           ],
           "default": "auto",
           "xs": 12,
-          "sm": 3
+          "sm": 3,
+          "hidden": "!data.wbHpUse"
         },
         "wbHpOff": {
           "type": "text",
           "label": "Off at values",
           "help": "numbers or texts, separated by ; - e.g. Ochsner \"Wärmeerzeuger Status\": 0;3;8 (Standby, extern gesperrt, Störung)",
           "default": "0",
-          "hidden": "data.wbHpKind !== 'status'",
+          "hidden": "!data.wbHpUse || (data.wbHpKind !== 'status')",
           "xs": 12,
           "sm": 6,
           "newLine": true
@@ -1156,12 +1166,12 @@
           "max": 50000,
           "xs": 6,
           "sm": 3,
-          "hidden": "data.wbHpKind === 'status'",
+          "hidden": "!data.wbHpUse || (data.wbHpKind === 'status')",
           "newLine": true
         },
         "wbHpAction": {
           "type": "select",
-          "label": "While it runs",
+          "label": "When the heat pump runs",
           "options": [
             {
               "value": "pause",
@@ -1169,28 +1179,34 @@
             },
             {
               "value": "min",
-              "label": "car with minimum current"
-            },
-            {
-              "value": "none",
-              "label": "nothing"
+              "label": "car only with the minimum current (6 A)"
             }
           ],
           "default": "pause",
           "xs": 6,
-          "sm": 3
+          "sm": 3,
+          "hidden": "!data.wbHpUse"
+        },
+        "wbPeakUse": {
+          "type": "checkbox",
+          "label": "Limit the grid import (power-based tariff)",
+          "default": true,
+          "help": "switchable while running: energie.0.wallbox.peakLimit (kW, 0 = off)",
+          "xs": 12,
+          "newLine": true
         },
         "wbPeak": {
           "type": "number",
-          "label": "Grid import at most (kW, incl. car)",
-          "help": "0 = no limit",
+          "label": "At most (kW, house + car together)",
+          "help": "the car gets what is left; below 6 A it pauses",
           "default": 0,
           "min": 0,
           "max": 100,
           "step": 0.1,
           "xs": 12,
           "sm": 4,
-          "newLine": true
+          "newLine": true,
+          "hidden": "!data.wbPeakUse"
         },
         "wbPeakReserve": {
           "type": "number",
@@ -1199,7 +1215,7 @@
           "default": 500,
           "min": 0,
           "max": 10000,
-          "hidden": "!data.wbPeak",
+          "hidden": "!data.wbPeakUse || !data.wbPeak",
           "xs": 12,
           "sm": 4
         },
