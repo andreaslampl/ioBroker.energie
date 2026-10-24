@@ -1171,6 +1171,17 @@
           "sm": 4,
           "newLine": true
         },
+        "wbPeakReserve": {
+          "type": "number",
+          "label": "Reserve below the limit (W)",
+          "help": "kept free for the house, e.g. when the kettle starts",
+          "default": 500,
+          "min": 0,
+          "max": 10000,
+          "hidden": "!data.wbPeak",
+          "xs": 12,
+          "sm": 4
+        },
         "readyHeader": {
           "type": "header",
           "text": "Ready by (optional)",

@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "news": {
+      "0.6.1": {
+        "en": "Wallbox: reserve below the import limit (default 500 W); the charging current is lowered at once (raised at most every 10 s)",
+        "de": "Wallbox: Reserve unter der Bezugsgrenze (Standard 500 W); der Ladestrom wird sofort gesenkt (erhöht höchstens alle 10 s)"
+      },
       "0.6.0": {
         "en": "Flow: line of each consumer (and the wallbox) from house, PV, grid or battery; animation speed adjustable; house outline green / orange / red by grid import",
         "de": "Energiefluss: Linie jedes Verbrauchers (und der Wallbox) vom Haus, von PV, vom Netz oder von der Batterie; Geschwindigkeit der Animation einstellbar; Haus grün / orange / rot nach Netzbezug"
@@ -173,7 +177,8 @@
     "wbFrom": "house",
     "animSpeed": 1,
     "houseColor": false,
-    "houseWarn": 1000
+    "houseWarn": 1000,
+    "wbPeakReserve": 500
   },
   "objects": [],
   "instanceObjects": [

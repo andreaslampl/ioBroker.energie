@@ -204,7 +204,8 @@ class Energie extends utils.Adapter {
         const since = s.ts - this.wb.sentAt;
         const changed = res.amps !== this.wb.sent;
         // pausing/starting at once, other changes at most every 10 s; repeat when the wallbox shows something else
-        const due = since >= w.minWrite || res.amps === 0 || !this.wb.sent;
+        // less (pause, import limit, heat pump) at once; more at most every 10 s, the car needs time to follow
+        const due = since >= w.minWrite || res.amps === 0 || !this.wb.sent || res.amps < this.wb.sent;
         const drift = this.wb.current !== null && Math.abs(this.wb.current - res.amps) >= 0.5 && since >= 30000;
         if ((changed && due) || drift) {
             this.wb.sent = res.amps;

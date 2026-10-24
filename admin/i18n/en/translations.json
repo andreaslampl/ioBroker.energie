@@ -174,5 +174,7 @@
   "House by source": "House by source",
   "Color the house by where its power comes from": "Color the house by where its power comes from",
   "green = only PV / battery, orange = a little from the grid, red = more from the grid": "green = only PV / battery, orange = a little from the grid, red = more from the grid",
-  "Orange up to (W from the grid)": "Orange up to (W from the grid)"
+  "Orange up to (W from the grid)": "Orange up to (W from the grid)",
+  "Reserve below the limit (W)": "Reserve below the limit (W)",
+  "kept free for the house, e.g. when the kettle starts": "kept free for the house, e.g. when the kettle starts"
 }

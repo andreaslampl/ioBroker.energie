@@ -96,8 +96,11 @@ dann zum Netzbezug und zum Hausverbrauch dazu (Energiefluss, Tageswerte, Regelun
   bestimmten Werten, Zahlen oder Texte – z. B. Ochsner „Wärmeerzeuger Status“ `0;3;8` = Standby, extern gesperrt,
   Störung; bei Dimplex und anderen den Betriebsstatus mit seinen Aus-Werten). Solange sie läuft, wird das Auto
   **pausiert** oder auf den **Mindeststrom** gesenkt (einstellbar) – in allen Modi.
-- **Netzbezug höchstens (kW, inkl. Auto):** Das Auto bekommt nur, was bis zu dieser Grenze übrig ist; reicht es nicht
-  für den Mindeststrom, pausiert es und startet erst nach der Start-Verzögerung wieder (nicht bei jedem Wasserkocher).
+- **Netzbezug höchstens (kW, inkl. Auto):** Das Auto bekommt nur, was bis zu dieser Grenze **minus Reserve** (Standard
+  500 W) übrig ist, auf ganze Ampere abgerundet. Steigt der Hausverbrauch, wird der Ladestrom **sofort** gesenkt
+  (erhöht wird höchstens alle 10 s); das Auto braucht dann noch einige Sekunden, bis es folgt. Reicht es nicht für den
+  Mindeststrom, pausiert es und startet erst nach der Start-Verzögerung wieder (nicht bei jedem Wasserkocher).
+  Beispiel: Grenze 12 kW, Reserve 0,5 kW, Haus mit Wärmepumpe 4 kW → fürs Auto 7,5 kW → 10 A (6,9 kW, 3-phasig).
 - **Fertig bis (optional):** Akkustand des Autos (z. B. aus dem VW-Adapter; mit **Faktor**, falls der Wert z. B. in
   Zehntel-Prozent kommt – `wallbox.carSoc` zeigt das Ergebnis zum Vergleich mit der App), Akkugröße, Ziel-% und Uhrzeit. Reicht die
   Zeit bis dahin mit Mindeststrom gerade noch (plus 15 Minuten Reserve), laden **beide** – das Auto mit Mindeststrom –,
@@ -133,6 +136,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.6.1
+- Wallbox: Reserve unter der Bezugsgrenze (Standard 500 W); Ladestrom wird sofort gesenkt.
 
 ### 0.6.0
 - Verbraucher (und Wallbox): Linie vom Haus, von PV, vom Netz oder von der Batterie (nur Darstellung).

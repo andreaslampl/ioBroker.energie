@@ -174,5 +174,7 @@
   "House by source": "Haus nach Herkunft",
   "Color the house by where its power comes from": "Haus nach Herkunft des Stroms einfärben",
   "green = only PV / battery, orange = a little from the grid, red = more from the grid": "grün = nur PV / Batterie, orange = wenig aus dem Netz, rot = mehr aus dem Netz",
-  "Orange up to (W from the grid)": "Orange bis (W aus dem Netz)"
+  "Orange up to (W from the grid)": "Orange bis (W aus dem Netz)",
+  "Reserve below the limit (W)": "Reserve unter der Grenze (W)",
+  "kept free for the house, e.g. when the kettle starts": "bleibt fürs Haus frei, z. B. wenn der Wasserkocher anspringt"
 }

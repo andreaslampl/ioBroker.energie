@@ -176,7 +176,7 @@ test('Charger: heat pump first, import limit, ready by; wallbox outside the mete
     assert.equal(ch.update(snap(at(21), 0, 0), { mode: 'fast', heatpump: true, carSoc: null }).urgent, false, 'no charge level known');
 
     // import limit 8 kW incl. car: house draws 3 kW -> 5 kW left = 7 A; house 5 kW -> 3 kW < 6 A -> pause, restart after the delay
-    ch = new Charger(cleanConfig({ ...base, wbPeak: 8 }).wallbox);
+    ch = new Charger(cleanConfig({ ...base, wbPeak: 8, wbPeakReserve: 0 }).wallbox);
     r = ch.update(snap(0, 3000 + 11040, 11040), { mode: 'fast' });
     assert.equal(r.amps, 7);
     assert.match(r.status, /7 A – Bezugsgrenze 8,0 kW/);
@@ -230,4 +230,12 @@ test('view: consumer line source, animation speed, house color settings', () => 
     assert.equal(cleanConfig({}).view.speed, 1);
     const s = snapshot(cfg, () => 100, 0);
     assert.deepEqual(s.consumers.map(c => c.from), ['pv', 'house', 'grid']);
+});
+
+test('Charger: import limit keeps a reserve (default 500 W)', () => {
+    const { Charger } = require('../lib/model');
+    const ch = new Charger(cleanConfig({ gridState: 'grid', wbPower: 'wb', wbCurrent: 'x', wbMax: 16, wbPeak: 12 }).wallbox);
+    // house + heat pump 4 kW, car 11 kW: 12 - 0.5 - 4 = 7.5 kW -> 10 A (6.9 kW)
+    const r = ch.update({ ts: 0, grid: 4000 + 11040, battery: null, soc: null, consumers: [{ id: 'wallbox', w: 11040 }] }, { mode: 'fast' });
+    assert.equal(r.amps, 10);
 });

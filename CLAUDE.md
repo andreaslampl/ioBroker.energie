@@ -74,6 +74,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   speed(w) / factor); `view.houseColor` + `houseWarn` W: house class src-green (< 50 W import) / src-orange
   (<= houseWarn) / src-red. Copied to SmartView energy-view.js.
 
+- 0.6.1: owner asked whether a reserve is kept below the import limit (e.g. 12 kW, heat pump + car) -> `wbPeakReserve`
+  (default 500 W) subtracted from the limit; controlWallbox writes a lower current at once (higher still every 10 s).
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.
