@@ -1274,6 +1274,192 @@
         }
       }
     },
+    "_hotwater": {
+      "type": "panel",
+      "label": "Hot water",
+      "items": {
+        "hwHelp": {
+          "type": "staticText",
+          "text": "Hot water: the heat pump's hot water mode stays on Automatik. For a charge the adapter switches it to Normal and back to Automatik when the boiler is warm: with surplus, when it gets too cold, at the latest at a time of day, or by hand (energie.0.hotwater.chargeNow). Off/on while running: energie.0.hotwater.active.",
+          "xs": 12
+        },
+        "hwUse": {
+          "type": "checkbox",
+          "label": "Control hot water",
+          "default": false,
+          "xs": 12,
+          "newLine": true
+        },
+        "hwMode": {
+          "type": "objectId",
+          "label": "Hot water mode (written)",
+          "help": "e.g. the hot water mode of ochsner-web2com",
+          "hidden": "!data.hwUse",
+          "xs": 12,
+          "sm": 6,
+          "newLine": true
+        },
+        "hwValAuto": {
+          "type": "text",
+          "label": "Value for Automatik",
+          "default": "1",
+          "hidden": "!data.hwUse",
+          "xs": 6,
+          "sm": 3
+        },
+        "hwValNormal": {
+          "type": "text",
+          "label": "Value for Normal (charge)",
+          "default": "4",
+          "hidden": "!data.hwUse",
+          "xs": 6,
+          "sm": 3
+        },
+        "hwTemp": {
+          "type": "objectId",
+          "label": "Boiler temperature (°C)",
+          "hidden": "!data.hwUse",
+          "xs": 12,
+          "sm": 6,
+          "newLine": true
+        },
+        "hwStart": {
+          "type": "number",
+          "label": "Charge when below (°C)",
+          "default": 45,
+          "min": 10,
+          "max": 90,
+          "hidden": "!data.hwUse",
+          "xs": 6,
+          "sm": 3,
+          "newLine": true
+        },
+        "hwTarget": {
+          "type": "number",
+          "label": "Charge up to (°C)",
+          "default": 50,
+          "min": 10,
+          "max": 90,
+          "hidden": "!data.hwUse",
+          "xs": 6,
+          "sm": 3
+        },
+        "hwHyst": {
+          "type": "number",
+          "label": "Again only below the target minus (K)",
+          "default": 3,
+          "min": 0.5,
+          "max": 20,
+          "hidden": "!data.hwUse",
+          "xs": 6,
+          "sm": 3
+        },
+        "hwMaxMin": {
+          "type": "number",
+          "label": "Stop at the latest after (min)",
+          "help": "safety: back to Automatik even if the target is not reached",
+          "default": 180,
+          "min": 10,
+          "max": 1440,
+          "hidden": "!data.hwUse",
+          "xs": 6,
+          "sm": 3
+        },
+        "hwSurplusHeader": {
+          "type": "header",
+          "text": "With surplus",
+          "size": 4,
+          "hidden": "!data.hwUse"
+        },
+        "hwSurplusUse": {
+          "type": "checkbox",
+          "label": "Charge with surplus",
+          "default": true,
+          "hidden": "!data.hwUse",
+          "xs": 12,
+          "newLine": true
+        },
+        "hwSurplusW": {
+          "type": "number",
+          "label": "From surplus (W)",
+          "help": "export (+ battery charging if ticked) - about the power of the heat pump",
+          "default": 2000,
+          "min": 0,
+          "max": 50000,
+          "hidden": "!data.hwUse || !data.hwSurplusUse",
+          "xs": 6,
+          "sm": 3,
+          "newLine": true
+        },
+        "hwOnDelay": {
+          "type": "number",
+          "label": "for at least (min)",
+          "default": 5,
+          "min": 0,
+          "max": 120,
+          "hidden": "!data.hwUse || !data.hwSurplusUse",
+          "xs": 6,
+          "sm": 3
+        },
+        "hwSurplusMax": {
+          "type": "number",
+          "label": "With surplus up to (°C)",
+          "help": "may be higher than the normal target - stores PV energy in the boiler",
+          "default": 55,
+          "min": 10,
+          "max": 90,
+          "hidden": "!data.hwUse || !data.hwSurplusUse",
+          "xs": 6,
+          "sm": 3
+        },
+        "hwBattery": {
+          "type": "checkbox",
+          "label": "Battery charging counts as surplus",
+          "default": false,
+          "hidden": "!data.hwUse || !data.hwSurplusUse",
+          "xs": 12,
+          "sm": 3
+        },
+        "hwImport": {
+          "type": "number",
+          "label": "Import tolerated while charging (W)",
+          "help": "import + battery discharge; above it for the time on the right = surplus gone",
+          "default": 500,
+          "min": 0,
+          "max": 50000,
+          "hidden": "!data.hwUse || !data.hwSurplusUse",
+          "xs": 6,
+          "sm": 3,
+          "newLine": true
+        },
+        "hwOffDelay": {
+          "type": "number",
+          "label": "Surplus gone for (min)",
+          "default": 10,
+          "min": 0,
+          "max": 120,
+          "hidden": "!data.hwUse || !data.hwSurplusUse",
+          "xs": 6,
+          "sm": 3
+        },
+        "hwLatestHeader": {
+          "type": "header",
+          "text": "At the latest",
+          "size": 4,
+          "hidden": "!data.hwUse"
+        },
+        "hwLatest": {
+          "type": "text",
+          "label": "Charge anyway at (HH:MM)",
+          "help": "when no charge finished today and the boiler is below the target minus the value above: charge up to the target. Empty = off",
+          "default": "",
+          "hidden": "!data.hwUse",
+          "xs": 6,
+          "sm": 3,
+          "newLine": true
+        }
+      }
+    },
     "_view": {
       "type": "panel",
       "label": "Appearance",

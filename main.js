@@ -4,7 +4,7 @@ const os = require('node:os');
 const fs = require('node:fs');
 const path = require('node:path');
 const utils = require('@iobroker/adapter-core');
-const { cleanConfig, inputs, convert, snapshot, Day, History, Surplus, Charger, MODES, hpRunning, dateKey } = require('./lib/model');
+const { cleanConfig, inputs, convert, snapshot, Day, History, Surplus, Charger, MODES, hpRunning, dateKey, HotWater, HW_REASONS } = require('./lib/model');
 const { FlowServer } = require('./lib/server');
 
 const TICK_MS = 2000;
@@ -33,6 +33,15 @@ function localAddress() {
 }
 
 const kwh = (en, de) => ({ type: 'number', role: 'value.energy', unit: 'kWh', read: true, write: false, name: { en, de } });
+/** value from the settings ("4", "true", "Normal") as number / boolean / text */
+function typed(v) {
+    const t = String(v).trim();
+    if (t === 'true' || t === 'false') {
+        return t === 'true';
+    }
+    return t !== '' && Number.isFinite(Number(t)) ? Number(t) : t;
+}
+
 const watt = (en, de) => ({ type: 'number', role: 'value.power', unit: 'W', read: true, write: false, name: { en, de } });
 const pct = (en, de) => ({ type: 'number', role: 'value', unit: '%', read: true, write: false, name: { en, de } });
 
@@ -89,6 +98,9 @@ class Energie extends utils.Adapter {
         }
         if (this.cfg.wallbox) {
             await this.startWallbox();
+        }
+        if (this.cfg.hotwater) {
+            await this.startHotWater();
         }
 
         const port = Number(this.config.port) || 8101;
@@ -225,6 +237,98 @@ class Energie extends utils.Adapter {
         }
     }
 
+    // ---------------- hot water (heat pump: Automatik <-> Normal) ----------------
+
+    async startHotWater() {
+        const c = this.cfg.hotwater;
+        this.hw = new HotWater(c, this.hwSaved || {});
+        this.hwState = { temp: null, mode: undefined, sent: null, sentAt: 0, repeatAt: 0, manual: false };
+        const act = await this.getStateAsync('hotwater.active');
+        this.hwState.active = act && act.val !== null && act.val !== undefined ? act.val === true || act.val === 'true' || act.val === 1 : true;
+        await this.setState('hotwater.active', this.hwState.active, true);
+        await this.setState('hotwater.chargeNow', false, true);
+        this.subscribeStates('hotwater.active');
+        this.subscribeStates('hotwater.chargeNow');
+        for (const id of [c.temp, c.mode]) {
+            if (!(await this.getForeignObjectAsync(id).catch(() => null))) {
+                this.log.warn(`Warmwasser: Datenpunkt ${id} gibt es nicht`);
+            }
+            await this.subscribeForeignStatesAsync(id);
+            const st = await this.getForeignStateAsync(id).catch(() => null);
+            this.hwValue(id, st ? st.val : null);
+        }
+        this.log.info(`Warmwasser: Regelung ${this.hwState.active ? 'an' : 'aus'}, nachladen unter ${c.start} °C bis ${c.target} °C` +
+            (c.surplusUse ? `, mit Überschuss ab ${c.surplusW} W bis ${c.surplusMax} °C` : '') + (c.latest ? `, spätestens ${c.latest}` : '') +
+            (this.hw.charging ? ` - lädt noch (${HW_REASONS[this.hw.reason]})` : ''));
+    }
+
+    hwValue(id, val) {
+        const c = this.cfg.hotwater;
+        if (id === c.temp) {
+            const n = Number(String(val ?? '').replace(',', '.'));
+            this.hwState.temp = val === null || val === undefined || val === '' || !Number.isFinite(n) ? null : n;
+        }
+        if (id === c.mode) {
+            this.hwState.mode = val;
+        }
+    }
+
+    async controlHotWater(s) {
+        const c = this.cfg.hotwater;
+        const h = this.hwState;
+        const was = this.hw.charging;
+        const res = this.hw.update(s, { temp: h.temp, active: h.active, manual: h.manual });
+        if (h.manual) {
+            h.manual = false;
+            await this.setState('hotwater.chargeNow', false, true);
+        }
+        if (!was && res.charge) {
+            this.log.info(`Warmwasser: lädt (${HW_REASONS[res.reason]}) - Boiler ${h.temp ?? '?'} °C, Überschuss ${res.avail} W`);
+        }
+        if (res.finished) {
+            this.log.info(`Warmwasser: fertig (${h.temp} °C) - wieder Automatik`);
+        } else if (res.timeout) {
+            this.log.warn(`Warmwasser: ${res.status} - Ziel nicht erreicht (Boiler ${h.temp} °C), wieder Automatik`);
+        } else if (res.lost) {
+            this.log.info(`Warmwasser: Überschuss weg (Boiler ${h.temp} °C) - wieder Automatik`);
+        }
+        await this.put('hotwater.charging', res.charge);
+        await this.put('hotwater.reason', res.charge ? HW_REASONS[res.reason] : '');
+        await this.put('hotwater.status', res.status);
+        await this.put('hotwater.temp', h.temp);
+        this.hwRes = res;
+        // what the heat pump should be set to: Normal while charging, Automatik after it (nothing while switched off)
+        const want = res.charge ? 'normal' : h.active || res.stopped ? 'auto' : null;
+        if (h.sent === null) {
+            // first tick after the start: do not touch a heat pump in Automatik, only make sure a running charge is on Normal
+            h.sent = res.charge ? null : want;
+        }
+        if (!want) {
+            h.sent = null;
+            return;
+        }
+        const value = typed(want === 'normal' ? c.valNormal : c.valAuto);
+        const shows = h.mode !== undefined && String(h.mode).trim() === String(value);
+        if (want !== h.sent) {
+            h.sent = want;
+            h.sentAt = h.repeatAt = s.ts;
+            this.save();
+            if (!shows) {
+                this.log.debug(`Warmwasser: ${c.mode} = ${value}`);
+                await this.setForeignStateAsync(c.mode, value, false);
+            }
+            return;
+        }
+        // the heat pump did not take it (or someone switched it): repeat after 2 min, at most every 5 min;
+        // "Automatik" only within 10 min after the charge, later a manual change is left alone
+        const late = s.ts - h.sentAt >= 120000 && s.ts - h.repeatAt >= 300000;
+        if (!shows && h.mode !== undefined && late && (want === 'normal' || s.ts - h.sentAt < 600000)) {
+            h.repeatAt = s.ts;
+            this.log.warn(`Warmwasser: Wärmepumpe zeigt ${h.mode} statt ${value} - sende nochmal`);
+            await this.setForeignStateAsync(c.mode, value, false);
+        }
+    }
+
     // ---------------- own arrangement of the symbols (positions.json) ----------------
 
     loadPositions() {
@@ -255,6 +359,7 @@ class Energie extends utils.Adapter {
             // first start
         }
         this.history = new History(data.history);
+        this.hwSaved = data.hotwater || {};
         const today = dateKey(Date.now());
         const day = data.day && data.day.date ? new Day(data.day.date, data.day) : null;
         if (day && day.date === today) {
@@ -270,7 +375,7 @@ class Energie extends utils.Adapter {
 
     save() {
         try {
-            fs.writeFileSync(`${this.file}.tmp`, JSON.stringify({ day: this.day, history: this.history }));
+            fs.writeFileSync(`${this.file}.tmp`, JSON.stringify({ day: this.day, history: this.history, hotwater: this.hw ? this.hw.saved() : undefined }));
             fs.renameSync(`${this.file}.tmp`, this.file);
         } catch (err) {
             this.log.warn(`Cannot save ${this.file}: ${err.message}`);
@@ -349,6 +454,21 @@ class Energie extends utils.Adapter {
                 name: { en: 'Car would not be ready in time - charges despite heat pump / limit', de: 'Auto würde nicht rechtzeitig voll – lädt trotz Wärmepumpe / Grenze' },
             });
         }
+        if (this.cfg.hotwater) {
+            await channel('hotwater', 'Warmwasser', 'Hot water');
+            await state('hotwater.active', {
+                type: 'boolean',
+                role: 'switch.enable',
+                read: true,
+                write: true,
+                name: { en: 'Hot water control on (off = the heat pump stays as it is)', de: 'Warmwasser-Regelung an (aus = Wärmepumpe bleibt wie sie ist)' },
+            });
+            await state('hotwater.chargeNow', { type: 'boolean', role: 'button', read: false, write: true, name: { en: 'Charge hot water now (up to the target)', de: 'Warmwasser jetzt laden (bis zum Ziel)' } });
+            await state('hotwater.charging', { type: 'boolean', role: 'indicator.working', read: true, write: false, name: { en: 'Charging (heat pump on Normal)', de: 'Lädt (Wärmepumpe auf Normal)' } });
+            await state('hotwater.reason', { type: 'string', role: 'text', read: true, write: false, name: { en: 'Why it charges', de: 'Warum es lädt' } });
+            await state('hotwater.status', { type: 'string', role: 'text', read: true, write: false, name: { en: 'Hot water control', de: 'Warmwasser-Regelung' } });
+            await state('hotwater.temp', { type: 'number', role: 'value.temperature', unit: '°C', read: true, write: false, name: { en: 'Boiler temperature', de: 'Boilertemperatur' } });
+        }
         await state('live', { type: 'string', role: 'json', read: true, write: false, name: { en: 'Live values (JSON, for SmartView)', de: 'Live-Werte (JSON, für SmartView)' } });
         // consumers: own folder per consumer; old ones are removed
         const ids = new Set(this.cfg.consumers.map(c => c.id));
@@ -388,6 +508,27 @@ class Energie extends utils.Adapter {
     onStateChange(id, state) {
         if (this.meta.has(id)) {
             this.raw.set(id, state ? state.val : null);
+        }
+        const hw = this.cfg && this.cfg.hotwater;
+        if (hw && this.hwState) {
+            if (id === hw.temp || id === hw.mode) {
+                this.hwValue(id, state ? state.val : null);
+            }
+            if (id === `${this.namespace}.hotwater.active` && state && !state.ack) {
+                this.hwState.active = state.val === true || state.val === 1 || state.val === 'true';
+                this.log.info(`Warmwasser: Regelung ${this.hwState.active ? 'an' : 'aus'}`);
+                this.setState('hotwater.active', this.hwState.active, true).catch(() => {});
+            }
+            if (id === `${this.namespace}.hotwater.chargeNow` && state && !state.ack && (state.val === true || state.val === 1 || state.val === 'true')) {
+                if (this.hwState.active) {
+                    this.hwState.manual = true;
+                    this.log.info('Warmwasser: jetzt laden (von Hand)');
+                    this.tick().catch(() => {});
+                } else {
+                    this.log.warn('Warmwasser: Regelung ist aus - "jetzt laden" ignoriert');
+                    this.setState('hotwater.chargeNow', false, true).catch(() => {});
+                }
+            }
         }
         const w = this.cfg && this.cfg.wallbox;
         if (!w) {
@@ -455,6 +596,9 @@ class Energie extends utils.Adapter {
         if (this.charger) {
             await this.controlWallbox(s);
         }
+        if (this.hw) {
+            await this.controlHotWater(s);
+        }
         await this.put('info.connection', this.inputs.length > 0 && s.missing.length === 0);
         const live = this.live();
         await this.put('live', JSON.stringify(live));
@@ -482,7 +626,8 @@ class Energie extends utils.Adapter {
         const wallbox = w
             ? { name: w.name, consumer: w.consumer, heatpump: this.wb.hp, urgent: Boolean(r && r.urgent), mode: this.wb.mode, modes: MODES, status: r ? r.status : '', amps: r ? r.amps : null, available: r ? r.available : null, plugged: this.wb.plugged, current: this.wb.current }
             : null;
-        return { s: this.last || null, today: this.day ? this.day.summary() : null, surplus: this.sur || null, view: this.cfg.view, wallbox };
+        const hw = this.hwRes ? { charging: this.hwRes.charge, reason: this.hwRes.charge ? HW_REASONS[this.hwRes.reason] : '', status: this.hwRes.status, temp: this.hwRes.temp } : null;
+        return { s: this.last || null, today: this.day ? this.day.summary() : null, surplus: this.sur || null, view: this.cfg.view, wallbox, hotwater: hw };
     }
 
     /** chart data of a day (today when no date) */

@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.7.2",
+    "version": "0.8.0",
     "news": {
+      "0.8.0": {
+        "en": "Hot water control (tab Hot water): the heat pump stays on Automatik; the adapter switches to Normal for a charge and back when the boiler is warm - with surplus (up to its own higher temperature), when it is too cold, at the latest at a time of day, or by hand (hotwater.chargeNow); hotwater.active switches it off",
+        "de": "Warmwasser-Regelung (Reiter Warmwasser): die Wärmepumpe bleibt auf Automatik; zum Laden stellt der Adapter auf Normal und wieder zurück, wenn der Boiler warm ist – bei Überschuss (bis zu einer eigenen, höheren Temperatur), wenn er zu kalt ist, spätestens zu einer Uhrzeit oder von Hand (hotwater.chargeNow); hotwater.active schaltet sie aus"
+      },
       "0.7.2": {
         "en": "Wallbox: 'rest up to the limit' can only be chosen with an active import limit; without one the car gets the minimum current while the heat pump runs",
         "de": "Wallbox: „Rest bis zur Grenze“ ist nur mit aktiver Bezugsgrenze wählbar; ohne Grenze lädt das Auto bei laufender Wärmepumpe mit Mindeststrom"
@@ -187,6 +191,21 @@
     "wbCapacity": 77,
     "wbTarget": 80,
     "wbReady": "",
+    "hwUse": false,
+    "hwValAuto": "1",
+    "hwValNormal": "4",
+    "hwStart": 45,
+    "hwTarget": 50,
+    "hwHyst": 3,
+    "hwMaxMin": 180,
+    "hwSurplusUse": true,
+    "hwSurplusW": 2000,
+    "hwOnDelay": 5,
+    "hwSurplusMax": 55,
+    "hwBattery": false,
+    "hwImport": 500,
+    "hwOffDelay": 10,
+    "hwLatest": "",
     "wbHpKind": "auto",
     "wbHpOff": "0",
     "wbCarSocScale": 1,

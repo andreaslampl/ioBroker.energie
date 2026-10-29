@@ -214,3 +214,34 @@ test('adapter: heat pump rule and import limit switchable via wallbox.hpPriority
     await until(() => /Bezugsgrenze/.test(adapter.val('wallbox.status')));
     assert.equal(adapter.writes.at(-1).val, 0);
 });
+
+test('adapter: hot water switches the heat pump to Normal and back to Automatik', async t => {
+    const { adapter } = await start(t, { hwUse: true, hwMode: 'ochsner-web2com.0.values.ww_mode', hwTemp: 'ochsner-web2com.0.values.ww_temp', hwValAuto: '1', hwValNormal: '4', hwStart: 45, hwTarget: 50, hwSurplusW: 1500, hwOnDelay: 0 });
+    adapter.add('ochsner-web2com.0.values.ww_mode', '', 1);
+    adapter.add('ochsner-web2com.0.values.ww_temp', '°C', 52);
+    adapter.change('ochsner-web2com.0.values.ww_temp', 52);
+    await until(() => adapter.val('hotwater.temp') === 52);
+    assert.equal(adapter.val('hotwater.charging'), false);
+    assert.ok(!(adapter.writes || []).some(w => w.id.endsWith('ww_mode')), 'nothing written at start');
+    // export 1800 W >= 1500 W, below 55 - 3
+    adapter.change('ochsner-web2com.0.values.ww_temp', 49);
+    await until(() => (adapter.writes || []).some(w => w.id.endsWith('ww_mode') && w.val === 4));
+    assert.equal(adapter.val('hotwater.reason'), 'Überschuss');
+    adapter.change('ochsner-web2com.0.values.ww_mode', 4);
+    adapter.change('ochsner-web2com.0.values.ww_temp', 55);
+    await until(() => adapter.writes.at(-1).id.endsWith('ww_mode') && adapter.writes.at(-1).val === 1);
+    assert.equal(adapter.writes.at(-1).ack, false);
+    await until(() => adapter.val('hotwater.charging') === false);
+    assert.ok(adapter.logs.some(l => /Warmwasser: fertig/.test(l)));
+    // by hand, then control off -> Automatik again
+    adapter.change('ochsner-web2com.0.values.ww_mode', 1);
+    adapter.change('shelly.0.em3.Total_Power', 300);
+    adapter.change('ochsner-web2com.0.values.ww_temp', 47);
+    await until(() => /Automatik \(47/.test(adapter.val('hotwater.status')));
+    adapter.command('hotwater.chargeNow', true);
+    await until(() => adapter.writes.at(-1).val === 4 && adapter.val('hotwater.reason') === 'von Hand');
+    adapter.change('ochsner-web2com.0.values.ww_mode', 4);
+    adapter.command('hotwater.active', false);
+    await until(() => adapter.writes.at(-1).val === 1);
+    assert.equal(JSON.parse(adapter.val('live')).hotwater.status, 'Regelung aus');
+});

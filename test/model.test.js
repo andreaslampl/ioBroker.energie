@@ -297,3 +297,44 @@ test('Charger: "rest up to the limit" without an active limit gives the minimum 
     const ch2 = new Charger(cleanConfig({ gridState: 'grid', wbPower: 'wb', wbCurrent: 'x', wbMax: 16, wbHp: 'hp', wbHpAction: 'limit', wbPeak: 12 }).wallbox);
     assert.equal(ch2.update({ ts: 0, grid: 4000, battery: null, soc: null, consumers: [{ id: 'wallbox', w: 0 }] }, { mode: 'fast', heatpump: true, peak: 0 }).amps, 6);
 });
+
+test('HotWater: too cold, surplus with delay and own maximum, surplus gone, at the latest, by hand, timeout', () => {
+    const { HotWater } = require('../lib/model');
+    const cfg = cleanConfig({ hwUse: true, hwMode: 'o.0.ww.mode', hwTemp: 'o.0.ww.temp', hwStart: 45, hwTarget: 50, hwSurplusW: 2000, hwOnDelay: 5, hwSurplusMax: 55, hwOffDelay: 10, hwLatest: '15:00' }).hotwater;
+    assert.equal(cleanConfig({ hwUse: true, hwMode: 'x' }).hotwater, null, 'needs the temperature');
+    const day = new Date(2026, 9, 29, 10, 0).getTime();
+    const s = (min, exp = 0, imp = 0) => ({ ts: day + min * 60000, export: exp, import: imp, charge: 0, discharge: 0 });
+    const hw = new HotWater(cfg);
+    // too cold -> charge up to 50, then back
+    assert.equal(hw.update(s(0), { temp: 44 }).started, 'cold');
+    assert.match(hw.update(s(1), { temp: 47 }).status, /lädt \(zu kalt\) bis 50/);
+    assert.equal(hw.update(s(30), { temp: 50 }).finished, 'cold');
+    // surplus: only after 5 min, up to 55
+    assert.match(hw.update(s(60, 2500), { temp: 49 }).status, /startet in 5 min/);
+    assert.equal(hw.update(s(64, 2500), { temp: 49 }).charge, false);
+    assert.equal(hw.update(s(65, 2500), { temp: 49 }).started, 'surplus');
+    assert.equal(hw.update(s(80, 0, 300), { temp: 52 }).charge, true, '300 W import is tolerated');
+    assert.equal(hw.update(s(90, 0, 1500), { temp: 52 }).charge, true, 'surplus gone, waits 10 min');
+    assert.equal(hw.update(s(100, 0, 1500), { temp: 52 }).lost, true);
+    // above 55 - 3 no surplus charge
+    assert.match(hw.update(s(120, 5000), { temp: 53 }).status, /Automatik/);
+    // a new surplus charge reaches 55
+    hw.update(s(130, 5000), { temp: 50 });
+    assert.equal(hw.update(s(135, 5000), { temp: 50 }).started, 'surplus');
+    assert.equal(hw.update(s(150, 0), { temp: 55 }).finished, 'surplus');
+    // at the latest: a charge already finished today -> nothing
+    assert.equal(hw.update(s(310), { temp: 46 }).charge, false);
+    const fresh = new HotWater(cfg);
+    assert.equal(fresh.update(s(299), { temp: 46 }).charge, false, 'before 15:00');
+    assert.equal(fresh.update(s(300), { temp: 46 }).started, 'latest');
+    assert.equal(fresh.update(s(300 + 180), { temp: 48 }).timeout, true, 'stops after 180 min');
+    // by hand, switched off
+    assert.equal(fresh.update(s(500), { temp: 49, manual: true }).charge, true);
+    assert.equal(fresh.update(s(501), { temp: 49, active: false }).stopped, true);
+    assert.equal(fresh.update(s(502), { temp: 30, active: false }).charge, false, 'off = nothing');
+    // a running charge survives a restart
+    const again = new HotWater(cfg, fresh.saved());
+    assert.equal(again.charging, false);
+    hw.update(s(600), { temp: 40 });
+    assert.deepEqual(new HotWater(cfg, hw.saved()).reason, 'cold');
+});

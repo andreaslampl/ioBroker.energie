@@ -96,6 +96,16 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   "!data.wbPeakUse || !(data.wbPeak > 0)" (jsonConfig selectOption.hidden; not checked in the real admin), and
   Charger falls back to the minimum current ('nolimit') when the action is 'limit' but no limit is active.
 
+- 0.8.0: owner had a Blockly script (hot water on Automatik, Normal when the boiler drops below X until warm, back to
+  Automatik) and asked for it with surplus / "by time X anyway" -> put here (not in SmartView, which only shows):
+  `cleanHotWater()` (hwUse + hwMode + hwTemp), model `HotWater` (reasons cold/surplus/latest/manual; surplus = export
+  (+ charge if hwBattery) >= hwSurplusW for hwOnDelay, up to hwSurplusMax, ends after hwOffDelay with import+discharge >
+  hwImport unless below start; latest only if no charge finished today (`doneDate`) and below target - hyst; maxTime),
+  state saved in energie.json (`saved()`); main `controlHotWater()` writes valNormal / valAuto (typed) only on changes,
+  nothing at start unless a charge is running, repeats after 2 min (max every 5 min; Automatik only within 10 min);
+  states hotwater.active/chargeNow/charging/reason/status/temp, `live.hotwater`. Not yet tested with the real Ochsner
+  (mode codes for the hot water circuit unknown - defaults 1 Automatik / 4 Normal from the heating circuits).
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

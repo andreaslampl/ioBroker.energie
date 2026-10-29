@@ -128,6 +128,28 @@ im Auto) sind das ca. 12½ Stunden – ab ca. 18:20 lädt das Auto dann trotz W�
 - **Haus nach Herkunft einfärben:** grün = alles von PV/Batterie, orange = wenig aus dem Netz (bis zur eingestellten
   Grenze, Standard 1000 W), rot = mehr aus dem Netz.
 
+## Warmwasser – mit PV-Überschuss laden
+
+Reiter **„Warmwasser“**, Haken **„Warmwasser regeln“**. Die Warmwasser-Betriebsart der Wärmepumpe bleibt auf
+**Automatik**. Zum Laden stellt der Adapter auf **Normal** und, wenn der Boiler warm ist, wieder auf **Automatik**.
+Das ersetzt ein Blockly-Skript, das dasselbe macht.
+
+Es wird geladen, wenn …
+
+1. **zu kalt:** die Boilertemperatur unter „Laden, wenn unter“ fällt (z. B. 45 °C) – bis „Laden bis“ (z. B. 50 °C);
+2. **Überschuss:** mindestens „Ab Überschuss“ W (etwa die Leistung der Wärmepumpe) „mindestens … min“ lang eingespeist
+   werden – bis „Mit Überschuss bis“ (z. B. 55 °C, darf höher sein: so wird PV-Strom im Boiler gespeichert). Fällt der
+   Überschuss weg (mehr Bezug als erlaubt, länger als eingestellt), geht es zurück auf Automatik – außer der Boiler ist
+   inzwischen unter „Laden, wenn unter“;
+3. **spätestens:** um „Trotzdem laden um“ (z. B. 15:00) heute noch keine Ladung fertig wurde und der Boiler unter
+   „Laden bis“ minus „Erneut erst unter Ziel minus“ liegt – dann bis „Laden bis“;
+4. **von Hand:** `energie.0.hotwater.chargeNow` = true (Taste in SmartView/VIS) – bis „Laden bis“.
+
+Zur Sicherheit wird nach „Spätestens beenden nach“ (Standard 180 min) immer zurück auf Automatik gestellt.
+`energie.0.hotwater.active` = false schaltet die Regelung aus (eine laufende Ladung wird beendet, dann bleibt die
+Wärmepumpe, wie sie ist). Für die Ochsner (ochsner-web2com): Datenpunkt der Warmwasser-Betriebsart wählen, die Werte für
+Automatik und Normal stehen in deren Texten (Objekt → Werte).
+
 ## Datenpunkte
 
 | Datenpunkt | Inhalt |
@@ -139,6 +161,7 @@ im Auto) sind das ca. 12½ Stunden – ab ca. 18:20 lädt das Auto dann trotz W�
 | `surplus.power`, `surplus.active` | Überschuss (Einspeisung, optional + Batterieladung) und Signal mit Schwellen/Verzögerung – z. B. für ioBroker.logik |
 | `wallbox.hpPriority`, `wallbox.peakLimit` (schreibbar) | Wärmepumpen-Vorrang ein/aus, Bezugsgrenze in kW (0 = aus) |
 | `wallbox.mode` (schreibbar), `wallbox.status`, `wallbox.target`, `wallbox.available`, `wallbox.urgent` | Wallbox: Modus, was die Regelung macht, vorgegebener Strom (A), verfügbare Leistung (W), „würde nicht rechtzeitig voll“ |
+| `hotwater.active` (schreibbar), `hotwater.chargeNow` (Taste), `hotwater.charging`, `hotwater.reason`, `hotwater.status`, `hotwater.temp` | Warmwasser: Regelung an/aus, jetzt laden, lädt gerade, warum, was die Regelung macht, Boilertemperatur |
 | `live` | alle Werte als JSON (für SmartView) |
 
 Die Tageswerte rechnet der Adapter selbst aus den Leistungen (alle 2 Sekunden); dafür braucht es keine
@@ -146,6 +169,9 @@ Zähler-Datenpunkte. Der Tagesverlauf (5-Minuten-Werte, 8 Tage) und die Tagessum
 Datenverzeichnis der Instanz – kein History-Adapter nötig.
 
 ## Changelog
+
+### 0.8.0
+- Warmwasser-Regelung: Automatik ↔ Normal bei Überschuss, zu kalt, spätestens um, von Hand.
 
 ### 0.7.2
 - „Rest bis zur Grenze“ nur mit aktiver Bezugsgrenze wählbar; ohne Grenze Mindeststrom statt unbegrenzt.
