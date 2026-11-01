@@ -338,3 +338,9 @@ test('HotWater: too cold, surplus with delay and own maximum, surplus gone, at t
     hw.update(s(600), { temp: 40 });
     assert.deepEqual(new HotWater(cfg, hw.saved()).reason, 'cold');
 });
+
+test('wallbox plugged: booleans, numbers and OCPP status texts', () => {
+    const { pluggedValue } = require('../lib/model');
+    assert.deepEqual([true, false, 1, 0, 'true', null, ''].map(pluggedValue), [true, false, true, false, true, null, null]);
+    assert.deepEqual(['Available', 'Preparing', 'Charging', 'SuspendedEV', 'SuspendedEVSE', 'Finishing', 'Faulted'].map(pluggedValue), [false, true, true, true, true, true, false]);
+});

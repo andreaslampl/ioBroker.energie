@@ -69,6 +69,18 @@ Im Reiter **Wallbox** die Datenpunkte der Wallbox eintragen. Für die **Siemens 
 Andere Wallboxen gehen genauso, wenn sie einen Datenpunkt für den Ladestrom in A haben (bei Bedarf
 zusätzlich „Laden ein/aus“).
 
+**Wallbox über OCPP** (z. B. FoxESS-Wallboxen, auch unter anderem Namen mit der App „Elite Charger“; in der App
+als OCPP-Server `ws://<ioBroker-IP>:9220` eintragen) mit dem Adapter **ocpp** – `<id>` ist die Wallbox im Objektbaum,
+`1` der Ladepunkt:
+
+| Feld | Datenpunkt |
+|---|---|
+| Ladeleistung | unter `ocpp.0.<id>.1.meterValues` die Wirkleistung (Power.Active.Import, W) |
+| Ladestrom (wird geschrieben) | `ocpp.0.<id>.1.chargeLimit` – dazu `chargeLimitType` auf **A** stellen |
+| Auto angesteckt | `ocpp.0.<id>.1.status` (OCPP-Text: Preparing/Charging/… = angesteckt, Available = frei) |
+| Laden ein/aus | zuerst leer lassen; pausiert die Wallbox bei 0 A nicht, `ocpp.0.<id>.1.transactionActive` |
+| Phasen | `numberPhases` der Wallbox (meist 3) |
+
 Den Modus schaltet `energie.0.wallbox.mode` um (SmartView-Kachel „Wallbox“, VIS, Skripte; Text oder Kürzel):
 
 | Modus | Verhalten |

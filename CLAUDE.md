@@ -106,6 +106,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   states hotwater.active/chargeNow/charging/reason/status/temp, `live.hotwater`. Not yet tested with the real Ochsner
   (mode codes for the hot water circuit unknown - defaults 1 Automatik / 4 Normal from the heating circuits).
 
+- 0.8.1: owner's FoxESS-made wallbox (Elite Charger app) connects via OCPP to the ioBroker ocpp adapter (connector status text,
+  chargeLimit with chargeLimitType A, transactionActive) -> `pluggedValue()` accepts OCPP status texts for `wbPlugged`.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

@@ -4,7 +4,7 @@ const os = require('node:os');
 const fs = require('node:fs');
 const path = require('node:path');
 const utils = require('@iobroker/adapter-core');
-const { cleanConfig, inputs, convert, snapshot, Day, History, Surplus, Charger, MODES, hpRunning, dateKey, HotWater, HW_REASONS } = require('./lib/model');
+const { pluggedValue, cleanConfig, inputs, convert, snapshot, Day, History, Surplus, Charger, MODES, hpRunning, dateKey, HotWater, HW_REASONS } = require('./lib/model');
 const { FlowServer } = require('./lib/server');
 
 const TICK_MS = 2000;
@@ -174,7 +174,7 @@ class Energie extends utils.Adapter {
             const n = Number(val);
             this.wb.carSoc = val === null || val === undefined || val === '' || !Number.isFinite(n) ? null : Math.round(n * this.cfg.wallbox.carSocScale * 10) / 10;
         } else if (key === 'plugged') {
-            this.wb.plugged = val === null || val === undefined ? null : val === true || val === 1 || val === 'true';
+            this.wb.plugged = pluggedValue(val);
         } else {
             const n = Number(val);
             this.wb.current = val === null || val === undefined || !Number.isFinite(n) ? null : n;
