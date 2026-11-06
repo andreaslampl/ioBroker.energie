@@ -115,6 +115,7 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   Copied to SmartView energy-view.js.
 
 - 0.9.1: owner asked whether the day values follow the chosen day without SmartView -> /flow: statsBox title + `EnergyView.stats`
+  Field: confirmed by the owner ("Funktioniert wie immer Perfekt").
   from `day.summary` for past days (live only while today is shown); the small dayStats line under the chart is gone.
 
 ## Conventions
