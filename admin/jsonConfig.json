@@ -1238,6 +1238,13 @@
           "sm": 6,
           "newLine": true
         },
+        "wbShowSoc": {
+          "type": "checkbox",
+          "label": "Show the car's charge level at the wallbox in the energy flow",
+          "default": true,
+          "xs": 12,
+          "sm": 4
+        },
         "wbCarSocScale": {
           "type": "number",
           "label": "Factor",

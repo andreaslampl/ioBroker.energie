@@ -627,7 +627,13 @@ class Energie extends utils.Adapter {
             ? { name: w.name, consumer: w.consumer, heatpump: this.wb.hp, urgent: Boolean(r && r.urgent), mode: this.wb.mode, modes: MODES, status: r ? r.status : '', amps: r ? r.amps : null, available: r ? r.available : null, plugged: this.wb.plugged, current: this.wb.current }
             : null;
         const hw = this.hwRes ? { charging: this.hwRes.charge, reason: this.hwRes.charge ? HW_REASONS[this.hwRes.reason] : '', status: this.hwRes.status, temp: this.hwRes.temp } : null;
-        return { s: this.last || null, today: this.day ? this.day.summary() : null, surplus: this.sur || null, view: this.cfg.view, wallbox, hotwater: hw };
+        let s = this.last || null;
+        // the car's charge level at the wallbox symbol (option, default on)
+        if (s && w && w.showSoc && w.consumer && this.wb.carSoc !== null && this.wb.carSoc !== undefined) {
+            const soc = Math.max(0, Math.min(100, Math.round(this.wb.carSoc)));
+            s = { ...s, consumers: (s.consumers || []).map(c => (c.id === w.consumer ? { ...c, soc } : c)) };
+        }
+        return { s, today: this.day ? this.day.summary() : null, surplus: this.sur || null, view: this.cfg.view, wallbox, hotwater: hw };
     }
 
     /** chart data of a day (today when no date) */

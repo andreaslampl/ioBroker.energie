@@ -214,5 +214,6 @@
   "Value for Normal (charge)": "Wert für Normal (laden)",
   "when no charge finished today and the boiler is below the target minus the value above: charge up to the target. Empty = off": "wenn heute noch keine Ladung fertig wurde und der Boiler unter Ziel minus obigem Wert liegt: bis zum Ziel laden. Leer = aus",
   "With surplus": "Mit Überschuss",
-  "With surplus up to (°C)": "Mit Überschuss bis (°C)"
+  "With surplus up to (°C)": "Mit Überschuss bis (°C)",
+  "Show the car's charge level at the wallbox in the energy flow": "Akkustand des Autos am Wallbox-Symbol im Energiefluss anzeigen"
 }

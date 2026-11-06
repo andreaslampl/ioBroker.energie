@@ -109,6 +109,11 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
 - 0.8.1: owner's FoxESS-made wallbox (Elite Charger app) connects via OCPP to the ioBroker ocpp adapter (connector status text,
   chargeLimit with chargeLimitType A, transactionActive) -> `pluggedValue()` accepts OCPP status texts for `wbPlugged`.
 
+- 0.9.0: owner asked for the car's percent at the wallbox as an option -> `wbShowSoc` (default true, cfg.wallbox.showSoc); main
+  `live()` adds `soc` to the wallbox consumer of `s` (only when carSoc is known); render.js: every consumer node has an
+  `.ef-soc` ring (dasharray 0 = invisible), label "Name · 63 %", soc presence is part of the shape key (label restored).
+  Copied to SmartView energy-view.js.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

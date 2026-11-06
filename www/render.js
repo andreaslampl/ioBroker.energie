@@ -198,7 +198,7 @@ const EnergyView = (() => {
             : '<circle class="' + cls + '" cx="' + n.x + '" cy="' + n.y + '" r="' + rr + '"' + extra + '/>';
         svg += shapeAt('ef-bg', r, '');
         // charge level as a ring along the outline (pathLength 100 = percent)
-        if (n.key === 'battery') svg += shapeAt('ef-soc', r + 0.5, ' pathLength="100" stroke-dasharray="0 100"' + (sq ? '' : ' transform="rotate(-90 ' + n.x + ' ' + n.y + ')"'));
+        if (n.key === 'battery' || n.consumer) svg += shapeAt('ef-soc', r + 0.5, ' pathLength="100" stroke-dasharray="0 100"' + (sq ? '' : ' transform="rotate(-90 ' + n.x + ' ' + n.y + ')"'));
         svg += icon(n.icon, n.x, n.y - (n.consumer ? 7 : 9), n.consumer ? 16 : 20);
         svg += '<text class="ef-val" x="' + n.x + '" y="' + (n.y + (n.consumer ? 12 : 15)) + '" data-val></text>';
         const ly = n.key === 'pv' ? n.y - r - 8 : n.y + r + 15;
@@ -236,7 +236,7 @@ const EnergyView = (() => {
     function update(s, view) {
       last = { s, view: view || {} };
       if (drag) return;
-      const key = [s.grid !== null && s.grid !== undefined, s.battery !== null && s.battery !== undefined, (s.consumers || []).map(c => c.id + c.icon + c.name + (c.from || '')).join(), JSON.stringify(view || {})].join('|');
+      const key = [s.grid !== null && s.grid !== undefined, s.battery !== null && s.battery !== undefined, (s.consumers || []).map(c => c.id + c.icon + c.name + (c.from || '') + (c.soc !== null && c.soc !== undefined ? '%' : '')).join(), JSON.stringify(view || {})].join('|');
       if (key !== shape) {
         shape = key;
         build(s, view);
@@ -270,7 +270,11 @@ const EnergyView = (() => {
       setNode('house', fmtW(s.house), undefined, src);
       for (const c of s.consumers || []) {
         setLine('c_' + c.id, c.w, false, COLOR.consumer);
-        setNode('c_' + c.id, fmtW(c.w), undefined, c.w >= 10 ? 'active' : '');
+        // a consumer with a charge level (car at the wallbox): ring + "Name · 63 %"
+        const hasSoc = c.soc !== null && c.soc !== undefined;
+        setNode('c_' + c.id, fmtW(c.w), hasSoc ? c.name + ' · ' + c.soc + ' %' : undefined, c.w >= 10 ? 'active' : '');
+        const cring = parts['n_c_' + c.id] && parts['n_c_' + c.id].querySelector('.ef-soc');
+        if (cring) cring.setAttribute('stroke-dasharray', (hasSoc ? c.soc : 0) + ' 100');
       }
     }
 
@@ -416,7 +420,7 @@ const EnergyView = (() => {
     '.ef-lbl{font-size:11px;text-anchor:middle;fill:var(--ef-muted,#888)}',
     '.ef-pv.active .ef-bg{stroke:#f5b700}.ef-pv.active .ef-ic{stroke:#f5b700}',
     '.ef-grid.import .ef-bg,.ef-grid.import .ef-ic{stroke:#e5484d}.ef-grid.export .ef-bg,.ef-grid.export .ef-ic{stroke:#30a46c}',
-    '.ef-battery .ef-soc{fill:none;stroke:#12a594;stroke-width:4;stroke-linecap:round}',
+    '.ef-battery .ef-soc,.ef-consumer .ef-soc{fill:none;stroke:#12a594;stroke-width:4;stroke-linecap:round}',
     '.ef-battery.active .ef-ic{stroke:#12a594}',
     '.ef-house .ef-bg{stroke:var(--ef-accent,#4c8dff);stroke-width:2.5}.ef-house .ef-ic{stroke:var(--ef-accent,#4c8dff)}',
     '.ef-house.src-green .ef-bg,.ef-house.src-green .ef-ic{stroke:#30a46c}.ef-house.src-orange .ef-bg,.ef-house.src-orange .ef-ic{stroke:#f08c00}.ef-house.src-red .ef-bg,.ef-house.src-red .ef-ic{stroke:#e5484d}',

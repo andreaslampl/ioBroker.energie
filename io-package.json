@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "energie",
-    "version": "0.8.1",
+    "version": "0.9.0",
     "news": {
+      "0.9.0": {
+        "en": "Wallbox: the car's charge level as ring and text at the wallbox symbol in the energy flow (option, on by default)",
+        "de": "Wallbox: Akkustand des Autos als Ring und Text am Wallbox-Symbol im Energiefluss (Option, standardmäßig an)"
+      },
       "0.8.1": {
         "en": "Wallbox 'plugged' data point may be an OCPP connector status (ocpp adapter: Preparing/Charging/SuspendedEV... = plugged, Available = not)",
         "de": "Wallbox-Datenpunkt „angesteckt“ darf ein OCPP-Status sein (ocpp-Adapter: Preparing/Charging/SuspendedEV … = angesteckt, Available = nicht)"
