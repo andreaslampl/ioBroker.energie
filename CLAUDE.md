@@ -114,6 +114,9 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   `.ef-soc` ring (dasharray 0 = invisible), label "Name · 63 %", soc presence is part of the shape key (label restored).
   Copied to SmartView energy-view.js.
 
+- 0.9.1: owner asked whether the day values follow the chosen day without SmartView -> /flow: statsBox title + `EnergyView.stats`
+  from `day.summary` for past days (live only while today is shown); the small dayStats line under the chart is gone.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.

@@ -50,12 +50,15 @@
   let shown = null; // date of the chart; null = today
   let dates = [];
   let lastChart = 0;
+  let hasBattery = false;
 
   function onLive(d) {
     if (!d || !d.s) return;
     lastLive = d;
     flow.update(d.s, viewOf(d));
-    EnergyView.stats($('stats'), d.today, d.s.battery !== null);
+    hasBattery = d.s.battery !== null;
+    // the day values follow the day of the chart; live only while today is shown
+    if (shown === null) EnergyView.stats($('stats'), d.today, hasBattery);
     const miss = d.s.missing || [];
     $('note').hidden = !miss.length;
     $('note').textContent = miss.length ? 'Kein Wert: ' + miss.join(', ') : '';
@@ -75,7 +78,14 @@
     const d = new Date(day.date + 'T12:00:00');
     $('dayTitle').textContent = date ? d.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Tagesverlauf heute';
     const s = day.summary;
-    $('dayStats').innerHTML = date && s ? ['PV <b>' + EnergyView.fmtKwh(s.pv) + '</b>', 'Verbrauch <b>' + EnergyView.fmtKwh(s.house) + '</b>', 'Autarkie <b>' + (s.autarky === null ? '–' : s.autarky + ' %') + '</b>'].join('') : '';
+    $('dayStats').innerHTML = '';
+    $('statsTitle').textContent = date ? d.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Heute';
+    if (date) {
+      if (s) EnergyView.stats($('stats'), s, hasBattery || s.charge > 0 || s.discharge > 0);
+      else $('stats').innerHTML = '<p class="hint">Für diesen Tag sind keine Tageswerte gespeichert.</p>';
+    } else if (lastLive) {
+      EnergyView.stats($('stats'), lastLive.today, hasBattery);
+    }
     EnergyView.chart($('chart'), day);
     const i = dates.indexOf(day.date);
     $('prev').disabled = i <= 0;
