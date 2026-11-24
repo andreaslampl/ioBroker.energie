@@ -118,6 +118,13 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   from `day.summary` for past days (live only while today is shown); the small dayStats line under the chart is gone.
   Field: confirmed by the owner ("Funktioniert wie immer Perfekt").
 
+- Idea (24.11., owner, not ordered yet): billing-year check against the supplier's forecast - settings: billing start date,
+  forecast kWh (from the annual bill, based on last year), optional monthly partial payment + price; states: used since
+  start, expected by today (seasonal: own History months once a year exists, else a typical profile - heat pump = winter
+  heavy, linear would warn wrongly in winter), projection to the end, difference in kWh / EUR; push via SmartView when
+  the projection exceeds the forecast by X %. Supplier APIs: none known for Austria; the exact counter would be the smart
+  meter (1.8.0 / 2.8.0 via the customer interface / IR reader), else the grid import measured here.
+
 ## Conventions
 
 - UI texts and README in German, code and comments in English.
