@@ -124,6 +124,7 @@ all manufacturers (Modbus values need factor/sign), shown in SmartView and VIS-2
   heavy, linear would warn wrongly in winter), projection to the end, difference in kWh / EUR; push via SmartView when
   the projection exceeds the forecast by X %. Supplier APIs: none known for Austria; the exact counter would be the smart
   meter (1.8.0 / 2.8.0 via the customer interface / IR reader), else the grid import measured here.
+  Owner has such a reader module; must stay optional (meter reading data point if set, else measured grid import).
 
 ## Conventions
 
